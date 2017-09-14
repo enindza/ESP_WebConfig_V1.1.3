@@ -1,5 +1,6 @@
 # ESP_WebConfig_V1.1.3
-test Johnn Lassen repsitory
+test Johnn Lassen ESP 8266 Arduino IDE WebConfig
+
 https://www.john-lassen.de/en/projects/esp-8266-arduino-ide-webconfig
 
 Key Features :
