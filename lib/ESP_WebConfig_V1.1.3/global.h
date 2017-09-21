@@ -35,6 +35,11 @@ struct strConfig {
 	byte LED_R;
 	byte LED_G;
 	byte LED_B;
+	long temp1;
+	long temp2;
+	long temp3;
+	long temp4;
+	long temp5;
 }   config;
 
 
@@ -57,13 +62,14 @@ void WriteConfig()
 {
 
 	Serial.println("Writing Config");
+	Serial.println("EEwrite temp2: " + config.temp2);
 	EEPROM.write(0,'C');
 	EEPROM.write(1,'F');
 	EEPROM.write(2,'G');
 
 	EEPROM.write(16,config.dhcp);
 	EEPROM.write(17,config.daylight);
-	
+
 	EEPROMWritelong(18,config.Update_Time_Via_NTP_Every); // 4 Byte
 
 	EEPROMWritelong(22,config.timezone);  // 4 Byte
@@ -99,8 +105,17 @@ void WriteConfig()
 	EEPROM.write(303,config.TurnOnMinute);
 	EEPROM.write(304,config.TurnOffHour);
 	EEPROM.write(305,config.TurnOffMinute);
-	WriteStringToEEPROM(306,config.DeviceName);
-	
+	Serial.println("writing t1");
+	EEPROMWritelong(306,config.temp1);  // 4 Byte
+	Serial.println("writing t1");
+	EEPROMWritelong(310,config.temp2);  // 4 Byte
+	Serial.println("writing t1");
+	EEPROMWritelong(314,config.temp3);  // 4 Byte
+	EEPROMWritelong(318,config.temp4);  // 4 Byte
+	EEPROMWritelong(322,config.temp5);  // 4 Byte
+	WriteStringToEEPROM(326,config.DeviceName);
+
+
 
 
 	EEPROM.commit();
@@ -109,6 +124,7 @@ boolean ReadConfig()
 {
 
 	Serial.println("Reading Configuration");
+	Serial.println("EEread temp2: " + config.temp2);
 	if (EEPROM.read(0) == 'C' && EEPROM.read(1) == 'F'  && EEPROM.read(2) == 'G' )
 	{
 		Serial.println("Configurarion Found!");
@@ -139,17 +155,25 @@ boolean ReadConfig()
 		config.ssid = ReadStringFromEEPROM(64);
 		config.password = ReadStringFromEEPROM(96);
 		config.ntpServerName = ReadStringFromEEPROM(128);
-		
-		
+
+
 		config.AutoTurnOn = EEPROM.read(300);
 		config.AutoTurnOff = EEPROM.read(301);
 		config.TurnOnHour = EEPROM.read(302);
 		config.TurnOnMinute = EEPROM.read(303);
 		config.TurnOffHour = EEPROM.read(304);
 		config.TurnOffMinute = EEPROM.read(305);
-		config.DeviceName= ReadStringFromEEPROM(306);
+		Serial.println("reading t1");
+		config.temp1 = EEPROMReadlong(306);
+		Serial.println("reading t2");
+		config.temp2 = EEPROMReadlong(310);
+		Serial.println("reading t3");
+		config.temp3 = EEPROMReadlong(314);
+		config.temp4 = EEPROMReadlong(318);
+		config.temp5 = EEPROMReadlong(322);
+		config.DeviceName= ReadStringFromEEPROM(326);
 		return true;
-		
+
 	}
 	else
 	{
@@ -160,22 +184,22 @@ boolean ReadConfig()
 
 /*
 **
-**  NTP 
+**  NTP
 **
 */
 
-const int NTP_PACKET_SIZE = 48; 
-byte packetBuffer[ NTP_PACKET_SIZE]; 
+const int NTP_PACKET_SIZE = 48;
+byte packetBuffer[ NTP_PACKET_SIZE];
 void NTPRefresh()
 {
 
-	
+
 
 
 	if (WiFi.status() == WL_CONNECTED)
 	{
-		IPAddress timeServerIP; 
-		WiFi.hostByName(config.ntpServerName.c_str(), timeServerIP); 
+		IPAddress timeServerIP;
+		WiFi.hostByName(config.ntpServerName.c_str(), timeServerIP);
 		//sendNTPpacket(timeServerIP); // send an NTP packet to a time server
 
 
@@ -189,18 +213,18 @@ void NTPRefresh()
 		packetBuffer[13]  = 0x4E;
 		packetBuffer[14]  = 49;
 		packetBuffer[15]  = 52;
-		UDPNTPClient.beginPacket(timeServerIP, 123); 
+		UDPNTPClient.beginPacket(timeServerIP, 123);
 		UDPNTPClient.write(packetBuffer, NTP_PACKET_SIZE);
 		UDPNTPClient.endPacket();
 
 
 		delay(1000);
-  
+
 		int cb = UDPNTPClient.parsePacket();
 		if (!cb) {
 			Serial.println("NTP no packet yet");
 		}
-		else 
+		else
 		{
 			Serial.print("NTP packet received, length=");
 			Serial.println(cb);
@@ -237,6 +261,6 @@ void Second_Tick()
 	}
 	Refresh = true;
 }
- 
+
 
 #endif

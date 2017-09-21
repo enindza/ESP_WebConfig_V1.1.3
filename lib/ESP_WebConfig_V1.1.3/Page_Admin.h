@@ -12,14 +12,15 @@ const char PAGE_AdminMainPage[] PROGMEM = R"=====(
 <a href="config.html" style="width:250px" class="btn btn--m btn--blue" >Network Configuration</a><br>
 <a href="info.html"   style="width:250px"  class="btn btn--m btn--blue" >Network Information</a><br>
 <a href="ntp.html"   style="width:250px"  class="btn btn--m btn--blue" >NTP Settings</a><br>
+<a href="appl.html"   style="width:250px"  class="btn btn--m btn--blue" >Application Settings</a><br>
 
 
 <script>
 window.onload = function ()
 {
-	load("style.css","css", function() 
+	load("style.css","css", function()
 	{
-		load("microajax.js","js", function() 
+		load("microajax.js","js", function()
 		{
 				// Do something after load...
 		});
@@ -30,5 +31,3 @@ function load(e,t,n){if("js"==t){var a=document.createElement("script");a.src=e,
 </script>
 
 )=====";
-
-

@@ -51,6 +51,7 @@ Include the HTML, STYLE and Script "Pages"
 #include "Page_NTPsettings.h"
 #include "Page_Information.h"
 #include "Page_General.h"
+#include "Page_applSettings.h"
 #include "PAGE_NetworkConfiguration.h"
 #include "example.h"
 
@@ -87,6 +88,11 @@ void setup ( void ) {
 		config.TurnOffMinute = 0;
 		config.TurnOnHour = 0;
 		config.TurnOnMinute = 0;
+		config.temp1 = 0;
+		config.temp2 = 0;
+		config.temp3 = 0;
+		config.temp4 = 0;
+		config.temp5 = 0;
 		WriteConfig();
 		Serial.println("General config applied");
 	}
@@ -105,7 +111,8 @@ void setup ( void ) {
 	ConfigureWifi();
 
 
-	server.on ( "/", processExample  );
+	//server.on ( "/", processExample  );
+	server.on ( "/", []() { Serial.println("admin.html");	server.send ( 200, "text/html", PAGE_AdminMainPage ); } );
 	server.on ( "/admin/filldynamicdata", filldynamicdata );
 
 	server.on ( "/favicon.ico",   []() { Serial.println("favicon.ico"); server.send ( 200, "text/html", "" );   }  );
@@ -115,14 +122,16 @@ void setup ( void ) {
 	server.on ( "/config.html", send_network_configuration_html );
 	server.on ( "/info.html", []() { Serial.println("info.html"); server.send ( 200, "text/html", PAGE_Information );   }  );
 	server.on ( "/ntp.html", send_NTP_configuration_html  );
+	server.on ( "/appl.html", send_application_configuration_html );
 	server.on ( "/general.html", send_general_html  );
-//	server.on ( "/example.html", []() { server.send ( 200, "text/html", PAGE_EXAMPLE );  } );
+	server.on ( "/example.html", []() { server.send ( 200, "text/html", PAGE_example );  } );
 	server.on ( "/style.css", []() { Serial.println("style.css"); server.send ( 200, "text/plain", PAGE_Style_css );  } );
 	server.on ( "/microajax.js", []() { Serial.println("microajax.js"); server.send ( 200, "text/plain", PAGE_microajax_js );  } );
 	server.on ( "/admin/values", send_network_configuration_values_html );
 	server.on ( "/admin/connectionstate", send_connection_state_values_html );
 	server.on ( "/admin/infovalues", send_information_values_html );
 	server.on ( "/admin/ntpvalues", send_NTP_configuration_values_html );
+	server.on ( "/admin/applvalues", send_application_configuration_values_html );
 	server.on ( "/admin/generalvalues", send_general_configuration_values_html);
 	server.on ( "/admin/devicename",     send_devicename_value_html);
 
