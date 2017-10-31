@@ -44,6 +44,8 @@
 /*
 Include the HTML, STYLE and Script "Pages"
 */
+# include <I2CDallas.h>
+
 #include "Page_Root.h"
 #include "Page_Admin.h"
 #include "Page_Script.js.h"
@@ -54,29 +56,32 @@ Include the HTML, STYLE and Script "Pages"
 #include "Page_applSettings.h"
 #include "PAGE_NetworkConfiguration.h"
 #include "example.h"
-
+#include "Setup_Server.h"
 
 #define ACCESS_POINT_NAME  "ESP"
 #define ACCESS_POINT_PASSWORD  "12345678"
 #define AdminTimeOut 180  // Defines the Time in Seconds, when the Admin-Mode will be diabled
 
 
-
-
 void setup ( void ) {
+	//Velicina eeprom memorije
 	EEPROM.begin(512);
 	Serial.begin(115200);
 	delay(500);
 	Serial.println("Starting ES8266");
+
+	// set default CONFIGURATION by changing cfg part for FRESH START
+	//EEPROM.write(0,'J');
+	// Test for FRESH START configuration settings
 	if (!ReadConfig())
 	{
 		// DEFAULT CONFIG
-		config.ssid = "MYSSID";
-		config.password = "MYPASSWORD";
+		config.ssid = "ssid";
+		config.password = "lozinka";
 		config.dhcp = true;
-		config.IP[0] = 192;config.IP[1] = 168;config.IP[2] = 1;config.IP[3] = 100;
+		config.IP[0] = 192;config.IP[1] = 168;config.IP[2] = 6;config.IP[3] = 95;
 		config.Netmask[0] = 255;config.Netmask[1] = 255;config.Netmask[2] = 255;config.Netmask[3] = 0;
-		config.Gateway[0] = 192;config.Gateway[1] = 168;config.Gateway[2] = 1;config.Gateway[3] = 1;
+		config.Gateway[0] = 192;config.Gateway[1] = 168;config.Gateway[2] = 6;config.Gateway[3] = 1;
 		config.ntpServerName = "0.de.pool.ntp.org";
 		config.Update_Time_Via_NTP_Every =  0;
 		config.timezone = -10;
@@ -84,69 +89,51 @@ void setup ( void ) {
 		config.DeviceName = "Not Named";
 		config.AutoTurnOff = false;
 		config.AutoTurnOn = false;
+		config.AutoTurnOff2 = false;
+		config.AutoTurnOn2 = false;
 		config.TurnOffHour = 0;
 		config.TurnOffMinute = 0;
 		config.TurnOnHour = 0;
 		config.TurnOnMinute = 0;
+		config.TurnOffHour2 = 0;
+		config.TurnOffMinute2 = 0;
+		config.TurnOnHour2 = 0;
+		config.TurnOnMinute2 = 0;
 		config.temp1 = 0;
 		config.temp2 = 0;
 		config.temp3 = 0;
 		config.temp4 = 0;
 		config.temp5 = 0;
+		config.SensName0 ="Kotao";
+		config.SensName1 ="Izlazna voda";
+		config.SensName2 ="Povratna voda";
+		config.SensName3 ="Soba";
+		config.SensName4 ="Spolja";
 		WriteConfig();
-		Serial.println("General config applied");
+		Serial.println("Default config applied");
 	}
-
 
 	if (AdminEnabled)
-	{
-		WiFi.mode(WIFI_AP_STA);
-		WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);
-	}
+	{ WiFi.mode(WIFI_AP_STA);
+		WiFi.softAP( ACCESS_POINT_NAME , ACCESS_POINT_PASSWORD);}
 	else
-	{
-		WiFi.mode(WIFI_STA);
-	}
+	{WiFi.mode(WIFI_STA);}
 
 	ConfigureWifi();
 
+	SetupServer();
 
-	//server.on ( "/", processExample  );
-	server.on ( "/", []() { Serial.println("admin.html");	server.send ( 200, "text/html", PAGE_AdminMainPage ); } );
-	server.on ( "/admin/filldynamicdata", filldynamicdata );
-
-	server.on ( "/favicon.ico",   []() { Serial.println("favicon.ico"); server.send ( 200, "text/html", "" );   }  );
-
-
-	server.on ( "/admin.html", []() { Serial.println("admin.html"); server.send ( 200, "text/html", PAGE_AdminMainPage );   }  );
-	server.on ( "/config.html", send_network_configuration_html );
-	server.on ( "/info.html", []() { Serial.println("info.html"); server.send ( 200, "text/html", PAGE_Information );   }  );
-	server.on ( "/ntp.html", send_NTP_configuration_html  );
-	server.on ( "/appl.html", send_application_configuration_html );
-	server.on ( "/general.html", send_general_html  );
-	server.on ( "/example.html", []() { server.send ( 200, "text/html", PAGE_example );  } );
-	server.on ( "/style.css", []() { Serial.println("style.css"); server.send ( 200, "text/plain", PAGE_Style_css );  } );
-	server.on ( "/microajax.js", []() { Serial.println("microajax.js"); server.send ( 200, "text/plain", PAGE_microajax_js );  } );
-	server.on ( "/admin/values", send_network_configuration_values_html );
-	server.on ( "/admin/connectionstate", send_connection_state_values_html );
-	server.on ( "/admin/infovalues", send_information_values_html );
-	server.on ( "/admin/ntpvalues", send_NTP_configuration_values_html );
-	server.on ( "/admin/applvalues", send_application_configuration_values_html );
-	server.on ( "/admin/generalvalues", send_general_configuration_values_html);
-	server.on ( "/admin/devicename",     send_devicename_value_html);
-
-
-
-
-	server.onNotFound ( []() { Serial.println("Page Not Found"); server.send ( 400, "text/html", "Page not Found" );   }  );
-	server.begin();
-	Serial.println( "HTTP server started" );
-	tkSecond.attach(1,Second_Tick);
-	UDPNTPClient.begin(2390);  // Port for NTP receive
+	I2CDallasSetup();
 }
 
 
 void loop ( void ) {
+	//
+	//web config
+	//Disable Admin mode
+	//update NTP time
+	//turn Timer ON/OFF
+	//
 	if (AdminEnabled)
 	{
 		if (AdminTimeOutCounter > AdminTimeOut)
@@ -182,7 +169,14 @@ void loop ( void ) {
 				  Serial.println("SwitchON");
 			 }
 		 }
-
+		 Minute_Old = DateTime.minute;
+		 if (config.AutoTurnOn)
+		 {
+			 if (DateTime.hour == config.TurnOnHour2 && DateTime.minute == config.TurnOnMinute2)
+			 {
+				  Serial.println("SwitchON2");
+			 }
+		 }
 
 		 Minute_Old = DateTime.minute;
 		 if (config.AutoTurnOff)
@@ -192,13 +186,30 @@ void loop ( void ) {
 				  Serial.println("SwitchOff");
 			 }
 		 }
+		 Minute_Old = DateTime.minute;
+		 if (config.AutoTurnOff)
+		 {
+			 if (DateTime.hour == config.TurnOffHour2 && DateTime.minute == config.TurnOffMinute2)
+			 {
+					Serial.println("SwitchOff2");
+			 }
+		 }
 	}
 	server.handleClient();
 
 
 	/*
 	*    Your Code here
+	*
+	*
 	*/
+	I2CDallasLoop();
+	/*
+	*    Your Code end here
+	*
+	*
+	*/
+
 
 	if (Refresh)
 	{
@@ -206,10 +217,4 @@ void loop ( void ) {
 		///Serial.println("Refreshing...");
 		 //Serial.printf("FreeMem:%d %d:%d:%d %d.%d.%d \n",ESP.getFreeHeap() , DateTime.hour,DateTime.minute, DateTime.second, DateTime.year, DateTime.month, DateTime.day);
 	}
-
-
-
-
-
-
 }

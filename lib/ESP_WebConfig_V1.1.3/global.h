@@ -32,6 +32,12 @@ struct strConfig {
 	byte TurnOffMinute;
 	byte TurnOnHour;
 	byte TurnOnMinute;
+	boolean AutoTurnOff2;
+	boolean AutoTurnOn2;
+	byte TurnOffHour2;
+	byte TurnOffMinute2;
+	byte TurnOnHour2;
+	byte TurnOnMinute2;
 	byte LED_R;
 	byte LED_G;
 	byte LED_B;
@@ -40,6 +46,20 @@ struct strConfig {
 	long temp3;
 	long temp4;
 	long temp5;
+	/*byte  SensorID1[8];
+	byte  SensorID2[8];
+	byte  SensorID3[8];
+	byte  SensorID4[8];
+	byte  SensorID5[8];*/
+	long	SensorTemperature[5];
+	byte	SensorID[5][8];
+	long	temperatura[5];
+	String SensName0;
+	String SensName1;
+	String SensName2;
+	String SensName3;
+	String SensName4;
+	byte LinkID[5];
 }   config;
 
 
@@ -58,6 +78,8 @@ void ConfigureWifi()
 	}
 }
 
+
+
 void WriteConfig()
 {
 
@@ -74,26 +96,27 @@ void WriteConfig()
 
 	EEPROMWritelong(22,config.timezone);  // 4 Byte
 
-
 	EEPROM.write(26,config.LED_R);
 	EEPROM.write(27,config.LED_G);
 	EEPROM.write(28,config.LED_B);
 
-	EEPROM.write(32,config.IP[0]);
-	EEPROM.write(33,config.IP[1]);
-	EEPROM.write(34,config.IP[2]);
-	EEPROM.write(35,config.IP[3]);
+	EEPROMwritearray(config.IP,32,4);
+	//EEPROM.write(32,config.IP[0]);
+	//EEPROM.write(33,config.IP[1]);
+	//EEPROM.write(34,config.IP[2]);
+	//EEPROM.write(35,config.IP[3]);
 
-	EEPROM.write(36,config.Netmask[0]);
-	EEPROM.write(37,config.Netmask[1]);
-	EEPROM.write(38,config.Netmask[2]);
-	EEPROM.write(39,config.Netmask[3]);
+	EEPROMwritearray(config.Netmask, 36, 4);
+	//EEPROM.write(36,config.Netmask[0]);
+	//EEPROM.write(37,config.Netmask[1]);
+	//EEPROM.write(38,config.Netmask[2]);
+	//EEPROM.write(39,config.Netmask[3]);
 
-	EEPROM.write(40,config.Gateway[0]);
-	EEPROM.write(41,config.Gateway[1]);
-	EEPROM.write(42,config.Gateway[2]);
-	EEPROM.write(43,config.Gateway[3]);
-
+	EEPROMwritearray(config.Gateway, 40, 4);
+	//EEPROM.write(40,config.Gateway[0]);
+	//EEPROM.write(41,config.Gateway[1]);
+	//EEPROM.write(42,config.Gateway[2]);
+	//EEPROM.write(43,config.Gateway[3]);
 
 	WriteStringToEEPROM(64,config.ssid);
 	WriteStringToEEPROM(96,config.password);
@@ -113,11 +136,24 @@ void WriteConfig()
 	EEPROMWritelong(314,config.temp3);  // 4 Byte
 	EEPROMWritelong(318,config.temp4);  // 4 Byte
 	EEPROMWritelong(322,config.temp5);  // 4 Byte
-	WriteStringToEEPROM(326,config.DeviceName);
-
-
-
-
+	WriteStringToEEPROM(326,config.DeviceName); //20 byte
+	EEPROM.write(346,config.AutoTurnOn2);
+	EEPROM.write(347,config.AutoTurnOff2);
+	EEPROM.write(348,config.TurnOnHour2);
+	EEPROM.write(349,config.TurnOnMinute2);
+	EEPROM.write(350,config.TurnOffHour2);
+	EEPROM.write(351,config.TurnOffMinute2);
+	//byte  SensorID1[8];
+	EEPROMwritearray(config.SensorID[0], 352, 8);
+	EEPROMwritearray(config.SensorID[1], 360, 8);
+	EEPROMwritearray(config.SensorID[2], 368, 8);
+	EEPROMwritearray(config.SensorID[3], 376, 8);
+	EEPROMwritearray(config.SensorID[4], 384, 8);
+	WriteStringToEEPROM(392, config.SensName0);
+	WriteStringToEEPROM(412, config.SensName1);
+	WriteStringToEEPROM(432, config.SensName2);
+	WriteStringToEEPROM(452, config.SensName3);
+	WriteStringToEEPROM(472, config.SensName4);
 	EEPROM.commit();
 }
 boolean ReadConfig()
@@ -139,23 +175,27 @@ boolean ReadConfig()
 		config.LED_R = EEPROM.read(26);
 		config.LED_G = EEPROM.read(27);
 		config.LED_B = EEPROM.read(28);
+		EEPROMreadarray(config.IP, 32, 4);
+		//config.IP[0] = EEPROM.read(32);
+		//config.IP[1] = EEPROM.read(33);
+		//config.IP[2] = EEPROM.read(34);
+		//config.IP[3] = EEPROM.read(35);
 
-		config.IP[0] = EEPROM.read(32);
-		config.IP[1] = EEPROM.read(33);
-		config.IP[2] = EEPROM.read(34);
-		config.IP[3] = EEPROM.read(35);
-		config.Netmask[0] = EEPROM.read(36);
-		config.Netmask[1] = EEPROM.read(37);
-		config.Netmask[2] = EEPROM.read(38);
-		config.Netmask[3] = EEPROM.read(39);
-		config.Gateway[0] = EEPROM.read(40);
-		config.Gateway[1] = EEPROM.read(41);
-		config.Gateway[2] = EEPROM.read(42);
-		config.Gateway[3] = EEPROM.read(43);
+		EEPROMreadarray(config.Netmask, 36, 4);
+		//config.Netmask[0] = EEPROM.read(36);
+		//config.Netmask[1] = EEPROM.read(37);
+		//config.Netmask[2] = EEPROM.read(38);
+		//config.Netmask[3] = EEPROM.read(39);
+
+		EEPROMreadarray(config.Gateway, 40, 4);
+		//config.Gateway[0] = EEPROM.read(40);
+		//config.Gateway[1] = EEPROM.read(41);
+		//config.Gateway[2] = EEPROM.read(42);
+		//config.Gateway[3] = EEPROM.read(43);
+
 		config.ssid = ReadStringFromEEPROM(64);
 		config.password = ReadStringFromEEPROM(96);
 		config.ntpServerName = ReadStringFromEEPROM(128);
-
 
 		config.AutoTurnOn = EEPROM.read(300);
 		config.AutoTurnOff = EEPROM.read(301);
@@ -172,8 +212,24 @@ boolean ReadConfig()
 		config.temp4 = EEPROMReadlong(318);
 		config.temp5 = EEPROMReadlong(322);
 		config.DeviceName= ReadStringFromEEPROM(326);
+		config.AutoTurnOn2= EEPROM.read(346);
+		config.AutoTurnOff2= EEPROM.read(347);
+		config.TurnOnHour2= EEPROM.read(348);
+		config.TurnOnMinute2= EEPROM.read(349);
+		config.TurnOffHour2= EEPROM.read(350);
+		config.TurnOffMinute2= EEPROM.read(351);
+		//EEPROMwritearray(config.SensorID1, 352, 8);
+		EEPROMreadarray(config.SensorID[0], 352, 8);
+		EEPROMreadarray(config.SensorID[1], 360, 8);
+		EEPROMreadarray(config.SensorID[2], 368, 8);
+		EEPROMreadarray(config.SensorID[3], 376, 8);
+		EEPROMreadarray(config.SensorID[4], 384, 8);
+		config.SensName0 = ReadStringFromEEPROM(392);
+		config.SensName1 = ReadStringFromEEPROM(412);
+		config.SensName2 = ReadStringFromEEPROM(432);
+		config.SensName3 = ReadStringFromEEPROM(452);
+		config.SensName4 = ReadStringFromEEPROM(472);
 		return true;
-
 	}
 	else
 	{

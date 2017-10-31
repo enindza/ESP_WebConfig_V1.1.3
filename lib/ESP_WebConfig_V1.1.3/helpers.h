@@ -3,7 +3,7 @@
 
 
 
-static const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31}; 
+static const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31};
 #define LEAP_YEAR(Y) ( ((1970+Y)>0) && !((1970+Y)%4) && ( ((1970+Y)%100) || !((1970+Y)%400) ) )
 
 
@@ -101,6 +101,24 @@ long EEPROMReadlong(long address)
       return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
 
+// startpoint adresa prvog bajta, n broj bajtova
+void EEPROMreadarray(byte TheArray[], int startpoint, int n)
+{
+	for (uint8_t k = 0; k < n; k++)
+	{
+		TheArray[k] = EEPROM.read(startpoint + k);
+	}
+}
+
+// // startpoint adresa prvog bajta, n broj bajtova
+void EEPROMwritearray(byte TheArray[], int startpoint, int n)
+{
+	for (uint8_t k = 0; k < n; k++)
+	{
+		EEPROM.write(startpoint + k,TheArray[k]);
+	}
+}
+
 void ConvertUnixTimeStamp( unsigned long TimeStamp, struct strDateTime* DateTime)
 {
 		uint8_t year;
@@ -114,18 +132,18 @@ void ConvertUnixTimeStamp( unsigned long TimeStamp, struct strDateTime* DateTime
 	  time /= 60; // now it is hours
 	  DateTime->hour = time % 24;
 	  time /= 24; // now it is days
-	  DateTime->wday = ((time + 4) % 7) + 1;  // Sunday is day 1 
-  
-	  year = 0;  
+	  DateTime->wday = ((time + 4) % 7) + 1;  // Sunday is day 1
+
+	  year = 0;
 	days = 0;
 	while((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= time) {
 		year++;
 	}
-	DateTime->year = year; // year is offset from 1970 
-  
+	DateTime->year = year; // year is offset from 1970
+
 	  days -= LEAP_YEAR(year) ? 366 : 365;
 	  time  -= days; // now it is days in this year, starting at 0
-  
+
 	  days=0;
 	  month=0;
 	  monthLength=0;
@@ -139,22 +157,20 @@ void ConvertUnixTimeStamp( unsigned long TimeStamp, struct strDateTime* DateTime
 		} else {
 		  monthLength = monthDays[month];
 		}
-    
+
 		if (time >= monthLength) {
 		  time -= monthLength;
 		} else {
 			break;
 		}
 	  }
-	  DateTime->month = month + 1;  // jan is month 1  
+	  DateTime->month = month + 1;  // jan is month 1
 	  DateTime->day = time + 1;     // day of month
 	  DateTime->year += 1970;
-
-	 
 }
 
 
-	
+
 String GetMacAddress()
 {
 	uint8_t mac[6];
@@ -183,7 +199,7 @@ String urldecode(String input) // (based on https://code.google.com/p/avr-netino
 {
 	 char c;
 	 String ret = "";
-	 
+
 	 for(byte t=0;t<input.length();t++)
 	 {
 		 c = input[t];
@@ -196,15 +212,15 @@ String urldecode(String input) // (based on https://code.google.com/p/avr-netino
          t++;
          c = (h2int(c) << 4) | h2int(input[t]);
 		 }
-		
+
 		 ret.concat(c);
 	 }
 	 return ret;
-  
+
 }
 
 
 
 
- 
+
 #endif
