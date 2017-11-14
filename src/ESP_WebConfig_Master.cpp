@@ -170,7 +170,7 @@ void loop ( void ) {
 			 }
 		 }
 		 Minute_Old = DateTime.minute;
-		 if (config.AutoTurnOn)
+		 if (config.AutoTurnOn2)
 		 {
 			 if (DateTime.hour == config.TurnOnHour2 && DateTime.minute == config.TurnOnMinute2)
 			 {
@@ -187,7 +187,7 @@ void loop ( void ) {
 			 }
 		 }
 		 Minute_Old = DateTime.minute;
-		 if (config.AutoTurnOff)
+		 if (config.AutoTurnOff2)
 		 {
 			 if (DateTime.hour == config.TurnOffHour2 && DateTime.minute == config.TurnOffMinute2)
 			 {
