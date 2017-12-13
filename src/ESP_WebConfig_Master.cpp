@@ -53,6 +53,7 @@ Include the HTML, STYLE and Script "Pages"
 #include "Page_NTPsettings.h"
 #include "Page_Information.h"
 #include "Page_General.h"
+//#include "Page_GeneralBoiler.h"
 #include "Page_applSettings.h"
 #include "PAGE_NetworkConfiguration.h"
 #include "example.h"
@@ -61,7 +62,14 @@ Include the HTML, STYLE and Script "Pages"
 #define ACCESS_POINT_NAME  "ESP"
 #define ACCESS_POINT_PASSWORD  "12345678"
 #define AdminTimeOut 180  // Defines the Time in Seconds, when the Admin-Mode will be diabled
+#define HEATERINDICATOR D3
+#define HEATER D1
+#define POWERINDICATOR D4
 
+
+void setPin(int state) {
+  digitalWrite(LED_BUILTIN, state);
+}
 
 void setup ( void ) {
 	//Velicina eeprom memorije
@@ -124,6 +132,10 @@ void setup ( void ) {
 	SetupServer();
 
 	I2CDallasSetup();
+	//Heater indicator
+	pinMode(HEATERINDICATOR, OUTPUT);
+
+
 }
 
 
@@ -153,7 +165,6 @@ void loop ( void ) {
 		}
 		else if ( cNTP_Update > (config.Update_Time_Via_NTP_Every * 60) )
 		{
-
 			NTPRefresh();
 			cNTP_Update =0;
 		}

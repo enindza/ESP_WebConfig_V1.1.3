@@ -1,0 +1,9 @@
+izmenjen je deo u page_general dodata su dva tastera ali jos treba da se doda paljenje i gasenje
+i skrite, izmeniti kao u network Configuration
+
+17.11.2017 stigao do linije 13 u Page_General, treba dodati merenje trenutne temperature
+
+22.11.2017
+* new variables are added, should be in eeprom as well
+long MaxTemperature;
+long MidTemperature;

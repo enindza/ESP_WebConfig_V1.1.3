@@ -10,6 +10,7 @@ unsigned long UnixTimestamp = 0;								// GLOBALTIME  ( Will be set by NTP)
 boolean Refresh = false; // For Main Loop, to refresh things like GPIO / WS2812
 int cNTP_Update = 0;											// Counter for Updating the time via NTP
 Ticker tkSecond;												// Second - Timer for Updating Datetime Structure
+//Ticker Half_Second_Tick;
 boolean AdminEnabled = true;		// Enable Admin Mode for a given Time
 byte Minute_Old = 100;				// Helpvariable for checking, when a new Minute comes up (for Auto Turn On / Off)
 
@@ -60,6 +61,10 @@ struct strConfig {
 	String SensName3;
 	String SensName4;
 	byte LinkID[5];
+	//	Boiler termperature
+	long MaxTemperature;
+	long MidTemperature;
+	//long HoldMidTemperature; //minutes to hold mid temperature
 }   config;
 
 
@@ -154,6 +159,8 @@ void WriteConfig()
 	WriteStringToEEPROM(432, config.SensName2);
 	WriteStringToEEPROM(452, config.SensName3);
 	WriteStringToEEPROM(472, config.SensName4);
+	EEPROMWritelong(492,config.MaxTemperature);
+	EEPROMWritelong(496,config.MidTemperature);
 	EEPROM.commit();
 }
 boolean ReadConfig()
@@ -229,6 +236,8 @@ boolean ReadConfig()
 		config.SensName2 = ReadStringFromEEPROM(432);
 		config.SensName3 = ReadStringFromEEPROM(452);
 		config.SensName4 = ReadStringFromEEPROM(472);
+		config.MaxTemperature = EEPROMReadlong(492);
+		config.MidTemperature = EEPROMReadlong(496);
 		return true;
 	}
 	else
@@ -318,5 +327,10 @@ void Second_Tick()
 	Refresh = true;
 }
 
+void Half_Second_Tick()
+{
+	int state = digitalRead(D3);  // get the current state of GPIO1 pin
+	digitalWrite(D3, !state);
+}
 
 #endif

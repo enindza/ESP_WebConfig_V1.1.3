@@ -21,10 +21,14 @@ void SetupServer(){
   server.on ( "/admin/applvalues", send_application_configuration_values_html );
   server.on ( "/admin/generalvalues", send_general_configuration_values_html);
   server.on ( "/admin/devicename",     send_devicename_value_html);
-
+  server.on ( "/admin/singleheating", set_singleheating  );
+  server.on ( "/admin/midsingleheating", set_midsingleheating  );
+  server.on ( "/admin/manualturnoff", set_manualturnoff  );
   server.onNotFound ( []() { Serial.println("Page Not Found"); server.send ( 400, "text/html", "Page not Found" );   }  );
   server.begin();
   Serial.println( "HTTP server started" );
   tkSecond.attach(1,Second_Tick);
+  tkSecond.attach(0.5,Half_Second_Tick);
+
   UDPNTPClient.begin(2390);  // Port for NTP receive
 }

@@ -183,17 +183,18 @@ void I2CDallasLoop(){
     {
       // Search the wire for address
       if(sensors.getAddress(tempDeviceAddress, i))
-    {
-      // Output the device ID
-      Serial.print("Temperature for device: ");
-      Serial.println(i,DEC);
-      config.LinkID[i] = GetSensorID(config.SensorID, tempDeviceAddress);
-      //CopySensorAddress(config.SensorID, i, tempDeviceAddress);
-      Serial.print("CopySensorAddress passed");
-      // It responds almost immediately. Let's print out the data
-      printTemperature(tempDeviceAddress); // Use a simple function to print out the data
-    }
+      {
+        // Output the device ID
+        Serial.print("Temperature for device: ");
+        Serial.println(i,DEC);
+        config.LinkID[i] = GetSensorID(config.SensorID, tempDeviceAddress);
+        //CopySensorAddress(config.SensorID, i, tempDeviceAddress);
+        Serial.print("CopySensorAddress passed");
+        // It responds almost immediately. Let's print out the data
+        printTemperature(tempDeviceAddress); // Use a simple function to print out the data
+      }
     //else ghost device! Check your power requirements and cabling
+    yield();
     }
 
     //Serial.print(" Temperature: ");

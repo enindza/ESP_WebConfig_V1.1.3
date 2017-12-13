@@ -13,55 +13,65 @@ const char PAGE_AdminGeneralSettings[] PROGMEM =  R"=====(
 	<td align="right">Name of Device</td>
 	<td><input type="text" id="devicename" name="devicename" value=""></td>
 </tr>
+
 <tr>
-	<td align="right">Boiler temp.: </td><td><span id="boilertemp"></span>°C</td>
+	<td align="left" colspan="2"><hr></td>
+</tr>
+
+<tr>
+	<td align="left" colspan="2">Timer 1 turn on at</td>
 </tr>
 <tr>
-	<td align="right">Max boiler temp.: </td><td><input type="text" id="maxboilertemperature" name="maxboilertemperature" size="2" value="">°C</td>
+	<td align="right"> Enabled:</td>
+	<td><input type="checkbox" id="tonenabled" name="tonenabled"></td>
 </tr>
-</table>
-<table border="0"  cellspacing="0" cellpadding="3" style="width:350px">
+
 <tr>
-	<td align="center"><a href="javascript:SingleRun()" style="width:330px" class="btn btn--m btn--blue">Max Heat and off</a></td>
+	<td align="right"> Time:</td>
+	<td><input type="text" id="tonhour" name="tonhour" size="2" value="00">:<input type="text" id="tonminute" name="tonminute" size="2" value="00"></td>
 </tr>
-</table>
-<table border="0"  cellspacing="0" cellpadding="3" style="width:350px">
+
 <tr>
-	<td align="left" ><a href="javascript:MidSingleRun()" style="width:220px" class="btn btn--m btn--blue">Limit heat and OFF</a></td>
-	<td align="left" > Limit:<input type="text" id="midboilertemperature" name="midboilertemperature" size="2" value="70">°C</td>
-</tr>
-</table>
-<table border="0"  cellspacing="0" cellpadding="3" style="width:350px">
+	<td align="left" colspan="2">Timer 1 turn off at:</td>
 <tr>
-	<td align="center"><a href="javascript:ManualTurnOFF()" style="width:330px" class="btn btn--m btn--blue">Turn OFF</a></td>
+	<td align="right"> Enabled:</td>
+	<td><input type="checkbox" id="toffenabled" name="toffenabled"></td>
 </tr>
+<tr>
+	<td align="right"> Time:</td>
+	<td><input type="text" id="toffhour" name="toffhour" size="2" value="00">:<input type="text" id="toffminute" name="toffminute" size="2" value="00"></td>
+</tr>
+
 </table>
 
-<table border="0"  cellspacing="0" cellpadding="3" style="width:350px">
+<table border="0"  cellspacing="0" cellpadding="3" style="width:350px" >
+
 <tr>
-	<td align="left" colspan="3"><hr></td>
+	<td align="left" colspan="2"><hr></td>
+</tr>
+
+<tr>
+	<td align="left" colspan="2">Timer 2 turn on at</td>
 </tr>
 <tr>
-	<td align="left" colspan="1">Timer 1 ON:  <input type="checkbox" id="tonenabled" name="tonenabled"></td>
-	<td align="right" colspan="2"> Time: <input type="text" id="tonhour" name="tonhour" size="2" value="00">:<input type="text" id="tonminute" name="tonminute" size="2" value="00"></td>
+	<td align="right"> Enabled:</td>
+	<td><input type="checkbox" id="tonenabled2" name="tonenabled2"></td>
+</tr>
+
+<tr>
+	<td align="right"> Time:</td>
+	<td><input type="text" id="tonhour2" name="tonhour2" size="2" value="00">:<input type="text" id="tonminute2" name="tonminute2" size="2" value="00"></td>
+</tr>
+
+<tr>
+	<td align="left" colspan="2">Timer 2 turn off at:</td>
+<tr>
+	<td align="right"> Enabled:</td>
+	<td><input type="checkbox" id="toffenabled2" name="toffenabled2"></td>
 </tr>
 <tr>
-	<td align="left" colspan="1">Timer 1 OFF: <input type="checkbox" id="toffenabled" name="toffenabled"></td>
-	<td align="right" colspan="2"> Time: <input type="text" id="toffhour" name="toffhour" size="2" value="00">:<input type="text" id="toffminute" name="toffminute" size="2" value="00"></td>
-</tr>
-<tr>
-	<td align="left" colspan="3"><hr></td>
-</tr>
-<tr>
-	<td align="left" colspan="1">Timer 2 ON:  <input type="checkbox" id="tonenabled2" name="tonenabled2"></td>
-	<td align="right" colspan="2"> Time: <input type="text" id="tonhour2" name="tonhour2" size="2" value="00">:<input type="text" id="tonminute2" name="tonminute2" size="2" value="00"></td>
-</tr>
-<tr>
-	<td align="left" colspan="1">Timer 2 OFF: <input type="checkbox" id="toffenabled2" name="toffenabled2"></td>
-	<td align="right" colspan="2"> Time: <input type="text" id="toffhour2" name="toffhour2" size="2" value="00">:<input type="text" id="toffminute2" name="toffminute2" size="2" value="00"></td>
-</tr>
-<tr>
-	<td align="left" colspan="3"><hr></td>
+	<td align="right"> Time:</td>
+	<td><input type="text" id="toffhour2" name="toffhour2" size="2" value="00">:<input type="text" id="toffminute2" name="toffminute2" size="2" value="00"></td>
 </tr>
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="btn btn--m btn--blue" value="Save"></td></tr>
 </table>
@@ -69,19 +79,8 @@ const char PAGE_AdminGeneralSettings[] PROGMEM =  R"=====(
 </form>
 <script>
 
-function SingleRun()
-{
-  setValues("/admin/singleheating");
-}
 
-function ManualTurnOFF(){
-	setValues("/admin/manualturnoff");
-}
 
-function MidSingleRun()
-{
-  setValues("/admin/midsingleheating");
-}
 window.onload = function ()
 {
 	load("style.css","css", function()
@@ -104,29 +103,6 @@ function load(e,t,n){if("js"==t){var a=document.createElement("script");a.src=e,
 //
 //
 
-void set_singleheating(){
-	String values ="";
-	values += "SingleHeating|ON|div\n";
-	server.send ( 200, "text/plain", values);
-	Serial.println(__FUNCTION__);
-	Serial.println("***************single button is pressed*******************");
-}
-
-void set_midsingleheating(){
-	String values ="";
-	values += "MidSingleHeating|ON|div\n";
-	server.send ( 200, "text/plain", values);
-	Serial.println(__FUNCTION__);
-	Serial.println("***************limit button is pressed*******************");
-}
-
-void set_manualturnoff(){
-	String values ="";
-	values += "ManualTurn|OFF|div\n";
-	server.send ( 200, "text/plain", values);
-	Serial.println(__FUNCTION__);
-	Serial.println("***************off button is pressed*******************");
-}
 
 void send_devicename_value_html()
 {
@@ -162,8 +138,6 @@ void send_general_html()
 			if (server.argName(i) == "tonminute2") config.TurnOnMinute2 =  server.arg(i).toInt();
 			if (server.argName(i) == "toffhour2") config.TurnOffHour2 =  server.arg(i).toInt();
 			if (server.argName(i) == "toffminute2") config.TurnOffMinute2 =  server.arg(i).toInt();
-			if (server.argName(i) == "maxboilertemperature") config.MaxTemperature =  server.arg(i).toInt();
-			if (server.argName(i) == "midboilertemperature") config.MidTemperature =  server.arg(i).toInt();
 		}
 		WriteConfig();
 		firstStart = true;
@@ -177,7 +151,6 @@ void send_general_html()
 void send_general_configuration_values_html()
 {
 	String values ="";
-	values += "boilertemp|" + (String) sensors.getTempC(config.SensorID[0]) +  "|div\n";
 	values += "devicename|" +  (String)  config.DeviceName +  "|input\n";
 	values += "tonhour|" +  (String)  config.TurnOnHour +  "|input\n";
 	values += "tonminute|" +   (String) config.TurnOnMinute +  "|input\n";
@@ -191,8 +164,6 @@ void send_general_configuration_values_html()
 	values += "toffminute2|" +   (String)  config.TurnOffMinute2 +  "|input\n";
 	values += "toffenabled2|" +  (String) (config.AutoTurnOff2 ? "checked" : "") + "|chk\n";
 	values += "tonenabled2|" +  (String) (config.AutoTurnOn2 ? "checked" : "") + "|chk\n";
-	values += "maxboilertemperature|" +   (String)  config.MaxTemperature +  "|input\n";
-	values += "midboilertemperature|" +   (String)  config.MidTemperature +  "|input\n";
 	server.send ( 200, "text/plain", values);
 	Serial.println(__FUNCTION__);
 }
