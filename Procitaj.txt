@@ -7,3 +7,8 @@ i skrite, izmeniti kao u network Configuration
 * new variables are added, should be in eeprom as well
 long MaxTemperature;
 long MidTemperature;
+
+
+20.12.2017 dodao debounce
+u global.h se nalazi TICKCOUNTERMAX koja treba da daje ukupno jednu sekundu
+potrebnoje objediniti half ticker i debounce ticker u jednu rutinu.

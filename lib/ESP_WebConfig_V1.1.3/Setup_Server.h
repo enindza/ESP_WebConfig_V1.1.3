@@ -28,7 +28,8 @@ void SetupServer(){
   server.begin();
   Serial.println( "HTTP server started" );
   tkSecond.attach(1,Second_Tick);
-  tkSecond.attach(0.5,Half_Second_Tick);
+  //tkSecond.attach(0.5,Half_Second_Tick);
+  tkSecond.attach(0.02,Debounce_Tick);
 
   UDPNTPClient.begin(2390);  // Port for NTP receive
 }

@@ -2,6 +2,8 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+
+
 // Data wire is plugged into port 2 on the Arduino+
 // original #define ONE_WIRE_BUS 2
 #define ONE_WIRE_BUS D2
@@ -176,6 +178,8 @@ void I2CDallasLoop(){
   //test waited long enough
   if (millis() - lastTempRequest >= delayInMillis) // waited long enough??
   {
+    Bouncemixutest();
+    
     digitalWrite(D4, LOW);
 
     // Loop through each device, print out temperature data

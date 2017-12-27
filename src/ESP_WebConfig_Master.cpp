@@ -30,6 +30,9 @@
 
 
   */
+  //
+  //debouncing
+
 
 
 #include <ESP8266WiFi.h>
@@ -39,12 +42,40 @@
 #include <EEPROM.h>
 #include <WiFiUdp.h>
 #include "helpers.h"
-#include "global.h"
 #include "Arduino.h"
+#include <Bouncemix.h>
+#include "Bouncemix.cpp"
+#define BUTTON_PIN D0
+#define LED_PIN D1
+#define HEATERINDICATOR D3
+#define HEATER D1
+#define POWERINDICATOR D4
+#define MINIMALTEMPERATURE 22
+// Instantiate a Bounce object
+Bouncemix debouncer = Bouncemix();
+
+#include "global.h"
+#include "bouncemixtest.h"
+
+
+
+// Instantiate a Bounce object :
+/*Bounce debouncer = Bounce();
+
+unsigned long buttonPressTimeStamp;
+unsigned long buttonPressTime;
+bool button;
+#include "BounceHelper2.h"
+*/
+
+
 /*
 Include the HTML, STYLE and Script "Pages"
 */
 # include <I2CDallas.h>
+#include "powerregulation.h"
+
+
 
 #include "Page_Root.h"
 #include "Page_Admin.h"
@@ -59,12 +90,13 @@ Include the HTML, STYLE and Script "Pages"
 #include "example.h"
 #include "Setup_Server.h"
 
+
+#include "powerregulation.h"
+
 #define ACCESS_POINT_NAME  "ESP"
 #define ACCESS_POINT_PASSWORD  "12345678"
 #define AdminTimeOut 180  // Defines the Time in Seconds, when the Admin-Mode will be diabled
-#define HEATERINDICATOR D3
-#define HEATER D1
-#define POWERINDICATOR D4
+
 
 
 void setPin(int state) {
@@ -135,6 +167,14 @@ void setup ( void ) {
 	//Heater indicator
 	pinMode(HEATERINDICATOR, OUTPUT);
 
+  // debouncing
+  // Setup the button with an internal pull-up :
+  pinMode(BUTTON_PIN,INPUT_PULLUP);
+  // After setting up the button, setup the Bounce instance :
+  debouncer.attach(BUTTON_PIN);
+  debouncer.interval(5); // interval in ms
+  //Setup the LED :
+  pinMode(LED_PIN,OUTPUT);
 
 }
 
@@ -215,11 +255,13 @@ void loop ( void ) {
 	*
 	*/
 	I2CDallasLoop();
+  PowerControl();
 	/*
 	*    Your Code end here
 	*
 	*
 	*/
+
 
 
 	if (Refresh)

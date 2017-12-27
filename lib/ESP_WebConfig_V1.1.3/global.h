@@ -1,6 +1,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+
+
 ESP8266WebServer server(80);									// The Webserver
 boolean firstStart = true;										// On firststart = true, NTP will try to get a valid time
 int AdminTimeOutCounter = 0;									// Counter for Disabling the AdminMode
@@ -13,7 +15,10 @@ Ticker tkSecond;												// Second - Timer for Updating Datetime Structure
 //Ticker Half_Second_Tick;
 boolean AdminEnabled = true;		// Enable Admin Mode for a given Time
 byte Minute_Old = 100;				// Helpvariable for checking, when a new Minute comes up (for Auto Turn On / Off)
-
+byte TickCounter = 0;	// TICKER counter
+#define TICKCOUNTERMAX 50 // for 20 ms ticker gives 1 sec period
+#define TICKPOWERCOUNTER 15 // 7 ~ 50/8 for 20ms tick
+long lastPowerRequest; //refresh for powerregulation
 
 struct strConfig {
 	String ssid;
@@ -257,16 +262,11 @@ const int NTP_PACKET_SIZE = 48;
 byte packetBuffer[ NTP_PACKET_SIZE];
 void NTPRefresh()
 {
-
-
-
-
 	if (WiFi.status() == WL_CONNECTED)
 	{
 		IPAddress timeServerIP;
 		WiFi.hostByName(config.ntpServerName.c_str(), timeServerIP);
 		//sendNTPpacket(timeServerIP); // send an NTP packet to a time server
-
 
 		Serial.println("sending NTP packet...");
 		memset(packetBuffer, 0, NTP_PACKET_SIZE);
@@ -325,12 +325,34 @@ void Second_Tick()
 			DateTime = tempDateTime;
 	}
 	Refresh = true;
+
 }
 
 void Half_Second_Tick()
 {
-	int state = digitalRead(D3);  // get the current state of GPIO1 pin
-	digitalWrite(D3, !state);
+	int state = digitalRead(HEATERINDICATOR);  // get the current state of GPIO1 pin
+	digitalWrite(HEATERINDICATOR, !state);
+
 }
+
+void Debounce_Tick()
+{
+	debouncer.update();
+	// Get the updated value :
+  bool value = debouncer.read();
+  //serial.print("vrednost debouncer.read je:");
+  //serial.println(value);
+  // Turn on or off the LED as determined by the state :
+  if (value == true){
+    digitalWrite(LED_PIN, 1 );
+  }
+  else{
+    digitalWrite(LED_PIN, 0 );
+  }
+
+
+}
+
+
 
 #endif
