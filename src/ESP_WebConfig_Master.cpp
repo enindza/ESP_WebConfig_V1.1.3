@@ -44,7 +44,7 @@
 #include "helpers.h"
 #include "Arduino.h"
 #include <Bouncemix.h>
-#include "Bouncemix.cpp"
+//#include "Bouncemix.cpp"
 #define BUTTON_PIN D0
 #define LED_PIN D1
 #define HEATERINDICATOR D3
@@ -57,8 +57,6 @@ Bouncemix debouncer = Bouncemix();
 #include "global.h"
 #include "bouncemixtest.h"
 
-
-
 // Instantiate a Bounce object :
 /*Bounce debouncer = Bounce();
 
@@ -68,14 +66,11 @@ bool button;
 #include "BounceHelper2.h"
 */
 
-
 /*
 Include the HTML, STYLE and Script "Pages"
 */
 # include <I2CDallas.h>
 #include "powerregulation.h"
-
-
 
 #include "Page_Root.h"
 #include "Page_Admin.h"
@@ -90,14 +85,11 @@ Include the HTML, STYLE and Script "Pages"
 #include "example.h"
 #include "Setup_Server.h"
 
-
 #include "powerregulation.h"
 
 #define ACCESS_POINT_NAME  "ESP"
 #define ACCESS_POINT_PASSWORD  "12345678"
 #define AdminTimeOut 180  // Defines the Time in Seconds, when the Admin-Mode will be diabled
-
-
 
 void setPin(int state) {
   digitalWrite(LED_BUILTIN, state);

@@ -47,11 +47,9 @@ void Bouncemix::interval(uint16_t interval_millis)
 
 bool Bouncemix::update()
 {
-
     // Read the state of the switch in a temporary variable.
     bool T0 = !digitalRead(pin);
-    //Serial.print("switch read as: ");
-    //Serial.println(T0, DEC);
+    //Serial.print("switch read as: "); Serial.println(T0, DEC);
 
     if (T0 == T1){ // if there was the change wait next call
     //Serial.println("last two of the same kind");
@@ -64,11 +62,7 @@ bool Bouncemix::update()
             SRise = true;
             if((TOFFC < DOUBLECLICKTIME + 20) and (TONC < DOUBLECLICKTIME)){SDouble = true;}
             TONC = 0;
-
-            //Serial.print("set rising edge ");
-            //Serial.println(SRise,DEC);
-            //Serial.print(" TONC is ");
-            //Serial.println(TONC);
+            //Serial.print("set rising edge "); Serial.println(SRise,DEC); Serial.print(" TONC is "); Serial.println(TONC);
           }
           if(TONC > LONGCLICKTIME){SLong = true;}
           if (TONC == 255){TONC = 254;}
@@ -80,11 +74,7 @@ bool Bouncemix::update()
         if (T2 == true){ // check if change is  fresh and set SFall
           SFell = true;
           TOFFC = 0;
-
-          //Serial.print("set falling edge ");
-          //Serial.println(SFell,DEC);
-          //Serial.print(" TOFFC is ");
-          //Serial.println(TOFFC);
+          //Serial.print("set falling edge "); Serial.println(SFell,DEC); Serial.print(" TOFFC is "); Serial.println(TOFFC);
         }
         if(TOFFC == 255){TOFFC = 254;}
       }
@@ -103,7 +93,6 @@ bool Bouncemix::update()
       //Serial.println(SON,DEC);
       return false;
     }
-
 }
 
 bool Bouncemix::read()
