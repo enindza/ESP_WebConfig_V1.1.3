@@ -2,11 +2,15 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-
+// for stack analytics
+extern "C" {
+#include <cont.h>
+  extern cont_t g_cont;
+}
 
 // Data wire is plugged into port 2 on the Arduino+
 // original #define ONE_WIRE_BUS 2
-#define ONE_WIRE_BUS D2
+#define ONE_WIRE_BUS D5
 #define TEMPERATURE_PRECISION 9
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
@@ -25,7 +29,7 @@ int  delayInMillis = 0;
 float temperature = 0.0;
 int  idle = 0;
 // pomoc BRISI kasnije
-long	SensorTemperature[5];
+//long	SensorTemperature[5];
 //byte  SensorID[5][8];
 
 // function to print the temperature for a device
@@ -170,7 +174,7 @@ void I2CDallasSetup(){
   Serial.print("Delay in millis:");
   Serial.println(delayInMillis, DEC);
   lastTempRequest = millis();
-  pinMode(D4, OUTPUT);
+  pinMode(BOARDINCIDATOR, OUTPUT);
 }
 
 
@@ -179,35 +183,53 @@ void I2CDallasLoop(){
   if (millis() - lastTempRequest >= delayInMillis) // waited long enough??
   {
     Bouncemixutest();
-    
-    digitalWrite(D4, LOW);
+
+    digitalWrite(BOARDINCIDATOR, LOW);
 
     // Loop through each device, print out temperature data
-    for(int i=0;i<numberOfDevices; i++)
+    //for(int i=0;i<numberOfDevices; i++)
+    for(int i=0;i<5; i++)
     {
       // Search the wire for address
-      if(sensors.getAddress(tempDeviceAddress, i))
+      //if(sensors.getAddress(tempDeviceAddress, i))
+      config.SensorConnected[i] = sensors.isConnected(config.SensorID[i]);
+      if(config.SensorConnected[i])
       {
         // Output the device ID
-        Serial.print("Temperature for device: ");
-        Serial.println(i,DEC);
+        //Serial.print("Temperature for device: ");
+        //Serial.println(i,DEC);
+        config.Temperatura[i] = sensors.getTempC(config.SensorID[i]);
+        /*
         config.LinkID[i] = GetSensorID(config.SensorID, tempDeviceAddress);
+        if (config.LinkID[i] < 5){
+          config.temperatura[config.LinkID[i]] = sensors.getTempC(tempDeviceAddress);
+        }
+        */
+        Serial.print("redni broj i:");
+        Serial.print(i,DEC);
+        //Serial.print(" linkovan broj:");
+        //Serial.print(config.LinkID[i],DEC);
+        Serial.print(" Temperatura: ");
+        Serial.println(config.Temperatura[i],DEC);
         //CopySensorAddress(config.SensorID, i, tempDeviceAddress);
-        Serial.print("CopySensorAddress passed");
+        //Serial.print("CopySensorAddress passed");
         // It responds almost immediately. Let's print out the data
-        printTemperature(tempDeviceAddress); // Use a simple function to print out the data
+        //printTemperature(tempDeviceAddress); // Use a simple function to print out the data
       }
     //else ghost device! Check your power requirements and cabling
     yield();
     }
+
+
 
     //Serial.print(" Temperature: ");
     //temperature = sensors.getTempCByIndex(0);
     //Serial.println(temperature, resolution - 8);
     //Serial.print("  Resolution: ");
     //Serial.println(resolution);
-    Serial.print("Idle counter: ");
-    Serial.println(idle);
+    Serial.print("Idle counter: "); Serial.print(idle);
+    Serial.print(",  FreeHeap:"); Serial.println(ESP.getFreeHeap(),DEC);
+    Serial.print(",  FreeStack:"); Serial.println(cont_get_free_stack(&g_cont),DEC);
     Serial.println();
 
     idle = 0;
@@ -224,6 +246,6 @@ void I2CDallasLoop(){
     lastTempRequest = millis();
   }
   //check idle time, set diode
-  digitalWrite(D4, HIGH);
+  digitalWrite(BOARDINCIDATOR, HIGH);
   idle++;
 }

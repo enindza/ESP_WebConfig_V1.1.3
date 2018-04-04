@@ -9,19 +9,19 @@ const char PAGE_ApplicationConfiguration[] PROGMEM = R"=====(
 Sensor reading:<br><br>
 <form action="" method="get">
 <table border="0"  cellspacing="0" cellpadding="3" style="width:350px" >
-<tr><td align="right">ID</td><td align="left"> Sensor serial </td><td align="left"> Sensor location </td><td align="left"> Temperature </td></tr>
-<tr><td align="right">0:</td><td id="I2Cadd0"> Dinamic data </td><td><input type="text" id="temp1" name="temp1" value=""></td><td id="s1read">Here comes the Dynamic Data in </td></tr>
-<tr><td align="right">1:</td><td id="I2Cadd1"> Dinamic data </td><td><input type="text" id="temp2" name="temp2" value=""></td><td id="s2read">Here comes the Dynamic Data in </td></tr>
-<tr><td align="right">2:</td><td id="I2Cadd2"> Dinamic data </td><td><input type="text" id="temp3" name="temp3" value=""></td><td id="s3read">Here comes the Dynamic Data in </td></tr>
-<tr><td align="right">3:</td><td id="I2Cadd3"> Dinamic data </td><td><input type="text" id="temp4" name="temp4" value=""></td><td id="s4read">Here comes the Dynamic Data in </td></tr>
-<tr><td align="right">4:</td><td id="I2Cadd4"> Dinamic data </td><td><input type="text" id="temp5" name="temp5" value=""></td><td id="s5read">Here comes the Dynamic Data in </td></tr>
+<tr><td align="right">ID</td><td align="left"> Sensor serial </td><td align="left">Location </td><td align="left"> Temp</td></tr>
+<tr><td align="right">0:</td><td id="I2Cadd0">----------------</td><td><input type="text" id="temp1" name="temp1" value=""></td><td id="s1read">--.--</td></tr>
+<tr><td align="right">1:</td><td id="I2Cadd1">----------------</td><td><input type="text" id="temp2" name="temp2" value=""></td><td id="s2read">--.--</td></tr>
+<tr><td align="right">2:</td><td id="I2Cadd2">----------------</td><td><input type="text" id="temp3" name="temp3" value=""></td><td id="s3read">--.--</td></tr>
+<tr><td align="right">3:</td><td id="I2Cadd3">----------------</td><td><input type="text" id="temp4" name="temp4" value=""></td><td id="s4read">--.--</td></tr>
+<tr><td align="right">4:</td><td id="I2Cadd4">----------------</td><td><input type="text" id="temp5" name="temp5" value=""></td><td id="s5read">--.--</td></tr>
 
 <tr><td colspan="2" align="center"><input type="submit" style="width:150px" class="btn btn--m btn--blue" value="Save"></td></tr>
 </table>
 <hr>
 <strong>List connected sensors:</strong><br>
 <table border="0"  cellspacing="3" style="width:350px" >
-<tr><td align="left"> Sensor serial </td><td align="right"> Sensor temperature </td><td align="right"> Set ID number </td></tr>
+<tr><td align="left">Sensor serial </td><td align="right"> Temp.</td><td align="right">Enter desired ID</td></tr>
 <tr><td id="I2C0"> Not available </td><td align="right" id="I2Ctemp0">--.-- </td><td><input type="text" id="LinkID0" name="LinkID0" value="99"></td></tr>
 <tr><td id="I2C1"> Not available </td><td align="right" id="I2Ctemp1">--.-- </td><td><input type="text" id="LinkID1" name="LinkID1" value="99"></td></tr>
 <tr><td id="I2C2"> Not available </td><td align="right" id="I2Ctemp2">--.-- </td><td><input type="text" id="LinkID2" name="LinkID2" value="99"></td></tr>
@@ -87,15 +87,10 @@ void send_application_configuration_html()
           sensors.getAddress(tempDeviceAddress, i);
           CopySensorAddress(config.SensorID, config.LinkID[i] , tempDeviceAddress);
           }
-          else {for (uint8_t j = 0; j < 8; j++){config.SensorID[config.LinkID[i]][j] = 255;}
+          else {for (uint8_t j = 0; j < 8; j++){config.SensorID[config.LinkID[i]][j] = 255;} config.SensorConnected[i] = false;
           }
         }
       }
-    //if (config.wayToStation>20) config.wayToStation=20;
-    //if (config.wayToStation<0) config.wayToStation=0;
-
-    //if (config.warningBegin>10) config.warningBegin=10;
-    //if (config.warningBegin<0) config.warningBegin=0;
 
     WriteConfig();
   }
@@ -125,11 +120,11 @@ void send_application_configuration_values_html()
   values += "I2Cadd2|" + (String) bin_to_strhex(config.SensorID[2], 8) + "|div\n";
   values += "I2Cadd3|" + (String) bin_to_strhex(config.SensorID[3], 8) + "|div\n";
   values += "I2Cadd4|" + (String) bin_to_strhex(config.SensorID[4], 8) + "|div\n";
-  values += "s1read|" + (String) sensors.getTempC(config.SensorID[0]) + "|div\n";
-  values += "s2read|" + (String) sensors.getTempC(config.SensorID[1]) + "|div\n";
-  values += "s3read|" + (String) sensors.getTempC(config.SensorID[2]) + "|div\n";
-  values += "s4read|" + (String) sensors.getTempC(config.SensorID[3]) + "|div\n";
-  values += "s5read|" + (String) sensors.getTempC(config.SensorID[4]) + "|div\n";
+  if (config.SensorConnected[0]){values += "s1read|" + (String) sensors.getTempC(config.SensorID[0]) + "|div\n";}
+  if (config.SensorConnected[1]){values += "s2read|" + (String) sensors.getTempC(config.SensorID[1]) + "|div\n";}
+  if (config.SensorConnected[2]){values += "s3read|" + (String) sensors.getTempC(config.SensorID[2]) + "|div\n";}
+  if (config.SensorConnected[3]){values += "s4read|" + (String) sensors.getTempC(config.SensorID[3]) + "|div\n";}
+  if (config.SensorConnected[4]){values += "s5read|" + (String) sensors.getTempC(config.SensorID[4]) + "|div\n";}
   if (numberOfDevices > 0) {
   sensors.getAddress(tempDeviceAddress, 0);
   values += "I2C0|" + (String) bin_to_strhex(tempDeviceAddress, 8) + "|div\n";

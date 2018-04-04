@@ -29,8 +29,8 @@
   #define Bouncemix_h
 
 #include <inttypes.h>
-#define DOUBLECLICKTIME 40
-#define LONGCLICKTIME 100
+//#define DOUBLECLICKTIME 40
+//#define LONGCLICKTIME 100
 
 
 class Bouncemix
@@ -63,14 +63,13 @@ class Bouncemix
     bool fell();
 
     // Returns the rising pin state
-    bool rose();
+    bool rise();
 
     void testprint();
 
     bool longpress();
 
     bool doubleclick();
-
 
  protected:
     unsigned long previous_millis;
@@ -87,6 +86,7 @@ class Bouncemix
     bool SFell; // falling edge indicator
     bool SDouble; //double switch indicator
     bool SLong; //long press indicator
-
+    uint8_t DOUBLECLICKTIME;
+    uint8_t LONGCLICKTIME;
 };
 #endif

@@ -12,3 +12,67 @@ long MidTemperature;
 20.12.2017 dodao debounce
 u global.h se nalazi TICKCOUNTERMAX koja treba da daje ukupno jednu sekundu
 potrebnoje objediniti half ticker i debounce ticker u jednu rutinu.
+
+**********
+zaglavlje
+I2Cadd0, I2Cadd1,... I2Cadd4 (serijski broj cipa) <- bin_to_strhex(config.SensorID[0], 8)
+temp1, temp2 ... temp5 (ime sezora) <-> config.SensName0
+s1read, s1read, s5read, ... (temperatura) <- sensors.getTempC(config.SensorID[0])
+**********
+Listing senzora, listanjem adresa po redu i dobijanjem tempDeviceAddress
+I2C0, I2C1, ... I2C4 (serijski broj cipa) <- bin_to_strhex(tempDeviceAddress, 8)
+I2Ctemp0, I2Ctemp0, ... I2Ctemp4 (temperature izlistanog senzora) <- sensors.getTempC(tempDeviceAddress)
+LinkID0, LinkID1, ... LinkID4 (redni broj senzora) <- GetSensorID(config.SensorID, tempDeviceAddress)
+LinkID0, LinkID1, ... LinkID4 (redni broj senzora) -> config.LinkID[0]
+
+********* 05.02.2018
+zapoceo dodavanje ocitavanja senzora prema predefinisanim adresama u I2Cdallas.h
+dodao indikaciju prisutnosti senzora config.SensorConnected[]
+izmenjen prikaza za vrednosti temperature kada senzor nije ukljucen.
+Potrebno je ispraviti gresku koja nastaje prilikom odabira vrednosti rednih brojeva senzora koji ne postoje.
+07.02.2018 ispravljena greska u izoru rednih brojeva senzora koji nisu prikljuceni
+
+******** 09.02.2018
+promenjeni su pinovi sa D2 i D1 za one wire kao i izlaz za grejac
+
+******** 11.02.2018
+dodao da se blink pattern formira na osnovu razlike srednje maximalne vrednosti i trenutne.
+Isprobao sa malim temperaturama
+
+
+******** 15.02.2018
+dodao PowerControl u modul powerregulation.h
+Potrebno je proveriti ispravnost modula kao i dodati postupanje u slucaju da se radi o alarmu.
+nakon toga treba povezati ovaj deo prgrama sa ostatkom koda, napraviri podprogram za
+ukljucivanje i iskljucivanje grejaca/releja zajedno sa mogucnostu invertovanja izlaza u zavisnosti od
+konfiguracije.
+dodati obradu tastera, ukljucivanje iskljucivanje, promena moda
+
+*********
+linija 225 u osnovnom dokumentu dodati trenutno vreme u poziv funkcije calculate timer state.
+config.TimerOn promenljiva nije definisana
+treba resiti utvrdjivanje trenutnog stanja tajmera prilikom azuriranja vremena
+
+********* 18.02.2018
+gasnje sa kratkim klikom nije uradjeno dobro
+dodati informacije o ostalim temperaturama i modu u kome radi u Page_General
+
+********* 21.02.2018
+test
+https://script.google.com/macros/s/AKfycbw9txFwPnjbdvm29XBvnPv97gGjfZiL4_J4HSYYGaegQiPYBcQ/exec?tag=test&value=-1
+
+https://script.google.com/macros/s/AKfycbw9txFwPnjbdvm29XBvnPv97gGjfZiL4_J4HSYYGaegQiPYBcQ/exec
+{"command": "appendRow", "sheet_name": "DataLogger", "values": "4f"}
+    skripta
+    https://script.google.com/macros/s/AKfycbw9txFwPnjbdvm29XBvnPv97gGjfZiL4_J4HSYYGaegQiPYBcQ/exec
+
+    On Mon, Feb 19, 2018 at 11:49 PM, Ime Prezime <slaganjevremena@gmail.com> wrote:
+
+        1RLEQPRxlUuaTbzPCKiyxSi-RllDTvVkeYCekGxucpgU  spreadsheet id
+
+********* 28.02.2018
+dodao slanje nekoliko pravih parametara na google sheet_name
+
+27.03.2018 webhooks Example IFTTT
+key iw-voIkkqScqCB3nYMmAoDHFQJbOfRtNCm3S1eTTewj
+https://maker.ifttt.com/trigger/Bojler_zagrejan/with/key/iw-voIkkqScqCB3nYMmAoDHFQJbOfRtNCm3S1eTTewj/?value55=8&value2=5&value3=good%20morning

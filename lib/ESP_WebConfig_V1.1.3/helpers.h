@@ -16,7 +16,6 @@ struct  strDateTime
 	byte month;
 	byte day;
 	byte wday;
-
 } ;
 
 
@@ -49,7 +48,6 @@ boolean checkRange(String Value)
 		 return true;
 	 }
 }
-
 
 void WriteStringToEEPROM(int beginaddress, String string)
 {
