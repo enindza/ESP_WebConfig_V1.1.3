@@ -1,10 +1,19 @@
+//#include <IFTTTwebhooks.h>
+//#include <ESP8266WiFi.h>
+
+
+//#include "local.h"
+
+
 // iftttMaker library
 //------- Replace the following! ------
 //#define KEY "zzzzzzzzzzzzzzzzzzzzzzz"  // Get it from this page https://ifttt.com/services/maker/settings
 //#define EVENT_NAME "device_on" // Name of your event name, set when you are creating the applet
-#include <IFTTTMaker.h>
+//#include <IFTTTMaker.h>
 //WiFiClientSecure *clientIFTTT = new WiFiClientSecure();
 //IFTTTMaker ifttt(KEY, clientIFTT);
+
+
 
 
 void Bouncemixutest(){
@@ -19,15 +28,9 @@ void Bouncemixutest(){
     if (config.Mode > 0 ) {config.Mode = 0;}
     else {config.Mode = 1;}
 
-// delete after IFTT test
-    WiFiClientSecure *clientIFTTT = new WiFiClientSecure();
-    IFTTTMaker ifttt(KEY, clientIFTTT);
-    if(ifttt.triggerEvent(EVENT_NAME, ssid)){
-      Serial.println("IFTT Successfully sent");
-    } else { Serial.println("IFTT Failed!");
-    delete clientIFTT;
-    clientIFTT = nullptr;
-}
+    // delete after IFTT test
+
+
 
   }
   if (debouncer.doubleclick()){config.Mode = 2; debouncer.reset();}

@@ -59,7 +59,8 @@
 Bouncemix debouncer = Bouncemix();
 
 #include "global.h"
-#include <IFTTTMaker.h>
+#include <IFTTTwebhooks.h>
+
 #include "bouncemixtest.h"
 
 #include "lib/BlinkPattern.h"
@@ -194,6 +195,25 @@ void setup ( void ) {
     //pattern.attach(D0,OUTPUT);
     pattern.BlinkPatternSet(0b10000000); //01010101 10100000
     pattern.Prescaler(8);
+
+    IFTTTwebhooks* client1 = nullptr;
+    client1 = new IFTTTwebhooks(KEY);
+
+    //triggerEvent takes an Event Name and then you can optional pass in up to 3 extra Strings
+    Serial.printf("EVENT_NAME: "); Serial.println(EVENT_NAME);
+    Serial.printf("ssid: "); Serial.println(ssid);
+    if(client1->triggerEvent(EVENT_NAME, ssid, ssid)){
+      Serial.println("IFTTT Successfully sent");
+    } else
+    {
+      Serial.println("IFTTT Failed!");
+    }
+    Serial.printf("Free heap1: %u\n", ESP.getFreeHeap());
+
+  // delete IFTTTwebhooks object
+    delete client1;
+    client1 = nullptr;
+    Serial.printf("Free heap2: %u\n", ESP.getFreeHeap());
 
 }
 

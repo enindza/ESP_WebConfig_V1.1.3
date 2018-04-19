@@ -76,3 +76,7 @@ dodao slanje nekoliko pravih parametara na google sheet_name
 27.03.2018 webhooks Example IFTTT
 key iw-voIkkqScqCB3nYMmAoDHFQJbOfRtNCm3S1eTTewj
 https://maker.ifttt.com/trigger/Bojler_zagrejan/with/key/iw-voIkkqScqCB3nYMmAoDHFQJbOfRtNCm3S1eTTewj/?value55=8&value2=5&value3=good%20morning
+
+19.04.2018
+dodao ifttt, potrebno srediti logiku kako radi IFTTT, dodati retry pogledaj fajl IFTTT.h, setovanaja su dodata u global.h
+dodati i proveru da li je okončana provera vremena, kao  i slanje na google sheet
