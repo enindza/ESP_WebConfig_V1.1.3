@@ -1,4 +1,6 @@
 
+#pragma once
+
 
 struct strConfig {
 	String ssid;
@@ -62,3 +64,10 @@ struct strConfig2{
 float	Temperatura[5];
 	byte tesstt;
 } config2;
+
+struct strIFTTT{
+  uint8_t	RetryCounter; //number of current retry
+	long RetryDelayExpire; //Time for next IFTTT send
+  uint8_t Success; // counts number of successful retry
+  uint8_t Code; // 0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+} IFTTTconfig;

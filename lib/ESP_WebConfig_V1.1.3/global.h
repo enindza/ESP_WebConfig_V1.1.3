@@ -27,6 +27,13 @@ long lastPowerRequest; //refresh for powerregulation
 long lastNTPRequest;
 boolean WaitingForNTPResponse;
 #include "Config.h"
+long HTTPSreadylasttime; //set the time when ESP will be ready for next
+boolean HTTPSready = true;
+// IFTTT
+//#define IFTTTRetryMax 3
+//#define IFTTTRetryDelay 60 //number of seconds before Retrying
+//uint8_t IFTTTRetryCount 0;
+//long IFTTTRetryDelaySet 0;
 
 
 /*

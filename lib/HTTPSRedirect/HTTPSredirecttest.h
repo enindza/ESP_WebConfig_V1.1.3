@@ -76,7 +76,7 @@ void HTTPSredirectFirstRun(){
   // flush() is needed to print the above (connecting...) message reliably,
   // in case the wireless connection doesn't go through
 //  Serial.flush();
-
+  Serial.println("First run HTTPSredirect");
 /*/
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -93,6 +93,8 @@ void HTTPSredirectFirstRun(){
 */
   if((WiFi.status() == WL_CONNECTED) and HTTPSRedirectFirstRunFlag){
     // Use HTTPSRedirect class to create a new TLS connection
+    HTTPSready = false;
+    HTTPSreadylasttime = millis();
     client = new HTTPSRedirect(httpsPort);
     client->setPrintResponseBody(true);
     client->setContentTypeHeader("application/json");
@@ -173,7 +175,8 @@ void HTTPSredirectFirstRun(){
 void HTTPSredirectloop() {
   #include "Config.h"
   HTTPSredirectscale++;
-
+  HTTPSready = false; //disable ifttt and other https requests
+  HTTPSreadylasttime = millis();
   if((WiFi.status() == WL_CONNECTED) and (HTTPSredirectscale >= HTTPSredirectscaleMax) and !HTTPSRedirectFirstRunFlag){
       // Use HTTPSRedirect class to create a new TLS connection
     Serial.println("Enter HTTPSredirect");
@@ -183,9 +186,9 @@ void HTTPSredirectloop() {
 
     HTTPSredirectscale = 0;
     static int error_count = 0;
-    static int connect_count = 0;
-    const unsigned int MAX_CONNECT = 20;
-    static bool flag = false;
+    //static int connect_count = 0;
+    //const unsigned int MAX_CONNECT = 20;
+    //static bool flag = false;
     //Serial.printf("Free heap: %u\n", ESP.getFreeHeap());
     //Serial.printf("unmodified stack   = %4d\n", cont_get_free_stack(&g_cont));
     // Try to connect for a maximum of 5 times
