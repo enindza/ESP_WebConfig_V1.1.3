@@ -29,7 +29,7 @@ void Bouncemixutest(){
     else {config.Mode = 1;}
 
     // delete after IFTT test
-    IFTTTset(0);
+    //IFTTTset(0);
 
 
   }

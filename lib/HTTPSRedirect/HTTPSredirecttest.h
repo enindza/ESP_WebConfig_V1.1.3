@@ -76,7 +76,7 @@ void HTTPSredirectFirstRun(){
   // flush() is needed to print the above (connecting...) message reliably,
   // in case the wireless connection doesn't go through
 //  Serial.flush();
-  Serial.println("First run HTTPSredirect");
+
 /*/
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -93,6 +93,7 @@ void HTTPSredirectFirstRun(){
 */
   if((WiFi.status() == WL_CONNECTED) and HTTPSRedirectFirstRunFlag){
     // Use HTTPSRedirect class to create a new TLS connection
+    Serial.println("First run HTTPSredirect");
     HTTPSready = false;
     HTTPSreadylasttime = millis();
     client = new HTTPSRedirect(httpsPort);

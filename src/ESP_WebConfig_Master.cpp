@@ -60,7 +60,7 @@ Bouncemix debouncer = Bouncemix();
 
 #include "global.h"
 #include <IFTTTwebhooks.h>
-#include "IFTTT.h"
+//#include "IFTTT.h"
 #include "bouncemixtest.h"
 
 #include "lib/BlinkPattern.h"
@@ -197,7 +197,8 @@ void setup ( void ) {
     pattern.Prescaler(8);
 
     //ifttt initialize
-    IFTTTinit();
+    //IFTTTinit();
+    HTTPSready = false;
 
 }
 

@@ -323,12 +323,13 @@ unsigned int HTTPSRedirect::getResponseStatus(void){
   //MODIFIED CODE
   //MODIFIED
   //MODIFIED
-  //Serial.println("DO loop enter -*-*-*");
+  Serial.println("DO loop enter -*-*-*");
   uint32_t timeout_ms = 950;
   uint32_t t = millis();
   do{
     line = readStringUntil('\n');
   }while(millis() - t < timeout_ms and line.length() == 0);
+  if (millis() - t < timeout_ms){Serial.println("-*-*-* DO loop exit");}
   //Serial.println("-*-*-* DO loop exit");
 
   pos = line.indexOf("HTTP/1.1 ");
