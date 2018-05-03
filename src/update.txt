@@ -1,0 +1,57 @@
+//03.05.2018 update
+
+Windows PowerShell
+Copyright (C) 2012 Microsoft Corporation. All rights reserved.
+
+PS C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3> platformio update
+Updating tool-scons                      @ 2.20501.4      [Up-to-date]
+Updating tool-unity                      @ 1.20403.0      [Up-to-date]
+Updating contrib-pysite                  @ 0.2.0          [Up-to-date]
+Updating contrib-piohome                 @ 0.9.5          [Up-to-date]
+Updating tool-pioplus                    @ 1.2.3          [Up-to-date]
+
+Platform Manager
+================
+Platform Atmel AVR
+--------
+Updating atmelavr                        @ 1.8.1          [1.8.2]
+
+Uninstalling atmelavr @ 1.8.1:  [OK]
+PlatformManager: Installing atmelavr @ 1.8.2
+Downloading...
+Unpacking...
+atmelavr @ 1.8.2 has been successfully installed!
+Updating toolchain-atmelavr              @ 1.40902.1      [Up-to-date]
+Updating framework-arduinoavr            @ 1.10620.2      [Up-to-date]
+Updating tool-avrdude                    @ 1.60300.2      [Up-to-date]
+
+Platform Espressif 8266
+--------
+Updating espressif8266                   @ 1.6.0          [1.7.0]
+Uninstalling espressif8266 @ 1.6.0:     [OK]
+PlatformManager: Installing espressif8266 @ 1.7.0
+Downloading...
+Unpacking...
+espressif8266 @ 1.7.0 has been successfully installed!
+Updating tool-mkspiffs                   @ 1.200.0        [Up-to-date]
+Updating sdk-esp8266                     @ 1.10502.0      [Up-to-date]
+Updating tool-esptool                    @ 1.409.0        [1.413.0]
+Uninstalling tool-esptool @ 1.409.0:    [OK]
+PackageManager: Installing tool-esptool @ 1.413.0
+Downloading...
+
+Unpacking...
+tool-esptool @ 1.413.0 has been successfully installed!
+Updating tool-espotapy                   @ 1.1.0          [Up-to-date]
+Updating toolchain-xtensa                @ 1.40802.0      [Up-to-date]
+Uninstalling framework-arduinoespressif8266 @ 1.20400.2:        [OK]
+PackageManager: Installing framework-arduinoespressif8266 @ ~1.20401.1
+Downloading...
+Unpacking...
+framework-arduinoespressif8266 @ 1.20401.2 has been successfully installed!
+
+
+Library Manager
+===============
+Updating ArduinoJson                     @ 5.13.1         [Up-to-date]
+PS C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3>
