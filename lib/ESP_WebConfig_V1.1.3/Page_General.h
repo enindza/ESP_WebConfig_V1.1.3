@@ -14,7 +14,7 @@ const char PAGE_AdminGeneralSettings[] PROGMEM =  R"=====(
 	<td><input type="text" id="devicename" name="devicename" value=""></td>
 </tr>
 <tr>
-	<td align="right">Boiler temp.: </td><td><span id="boilertemp"></span>°C</td>
+	<td align="right" id="SensName0">Boiler temp.: </td><td><span id="boilertemp"></span>°C</td>
 </tr>
 <tr>
 	<td align="right">Max boiler temp.: </td><td><input type="text" id="maxboilertemperature" name="maxboilertemperature" size="2" value="">°C</td>
@@ -46,7 +46,7 @@ const char PAGE_AdminGeneralSettings[] PROGMEM =  R"=====(
 	<td align="right" colspan="2"> Time: <input type="text" id="tonhour" name="tonhour" size="2" value="00">:<input type="text" id="tonminute" name="tonminute" size="2" value="00"></td>
 </tr>
 <tr>
-	<td align="left" colspan="1">Timer 1 OFF: <input type="checkbox" id="toffenabled" name="toffenabled"></td>
+	<td align="left" colspan="1">Timer 1 OFF: <!--input type="checkbox" id="toffenabled" name="toffenabled"--></td>
 	<td align="right" colspan="2"> Time: <input type="text" id="toffhour" name="toffhour" size="2" value="00">:<input type="text" id="toffminute" name="toffminute" size="2" value="00"></td>
 </tr>
 <tr>
@@ -57,7 +57,7 @@ const char PAGE_AdminGeneralSettings[] PROGMEM =  R"=====(
 	<td align="right" colspan="2"> Time: <input type="text" id="tonhour2" name="tonhour2" size="2" value="00">:<input type="text" id="tonminute2" name="tonminute2" size="2" value="00"></td>
 </tr>
 <tr>
-	<td align="left" colspan="1">Timer 2 OFF: <input type="checkbox" id="toffenabled2" name="toffenabled2"></td>
+	<td align="left" colspan="1">Timer 2 OFF: <!--input type="checkbox" id="toffenabled2" name="toffenabled2"--></td>
 	<td align="right" colspan="2"> Time: <input type="text" id="toffhour2" name="toffhour2" size="2" value="00">:<input type="text" id="toffminute2" name="toffminute2" size="2" value="00"></td>
 </tr>
 <tr>
@@ -110,6 +110,8 @@ void set_singleheating(){
 	server.send ( 200, "text/plain", values);
 	Serial.println(__FUNCTION__);
 	Serial.println("***************single button is pressed*******************");
+	if (config.Mode == 2 ) {config.Mode = 0;}
+	else {config.Mode = 2;}
 }
 
 void set_midsingleheating(){
@@ -118,6 +120,8 @@ void set_midsingleheating(){
 	server.send ( 200, "text/plain", values);
 	Serial.println(__FUNCTION__);
 	Serial.println("***************limit button is pressed*******************");
+	if (config.Mode == 1 ) {config.Mode = 0;}
+	else {config.Mode = 1;}
 }
 
 void set_manualturnoff(){
@@ -126,21 +130,22 @@ void set_manualturnoff(){
 	server.send ( 200, "text/plain", values);
 	Serial.println(__FUNCTION__);
 	Serial.println("***************off button is pressed*******************");
+	if (config.Mode == 0){
+		config.Mode = 3; debouncer.reset();
+	}
+	else {config.Mode = 0;}
 }
 
 void send_devicename_value_html()
 {
-
 	String values ="";
 	values += "devicename|" + (String) config.DeviceName + "|div\n";
 	server.send ( 200, "text/plain", values);
 	Serial.println(__FUNCTION__);
-
 }
 
 void send_general_html()
 {
-
 	if (server.args() > 0 )  // Save Settings
 	{
 		config.AutoTurnOn = false;
@@ -152,47 +157,47 @@ void send_general_html()
 			if (server.argName(i) == "devicename") config.DeviceName = urldecode(server.arg(i));
 			if (server.argName(i) == "tonenabled") config.AutoTurnOn = true;
 			if (server.argName(i) == "toffenabled") config.AutoTurnOff = true;
-			if (server.argName(i) == "tonhour") config.TurnOnHour =  server.arg(i).toInt();
-			if (server.argName(i) == "tonminute") config.TurnOnMinute =  server.arg(i).toInt();
-			if (server.argName(i) == "toffhour") config.TurnOffHour =  server.arg(i).toInt();
-			if (server.argName(i) == "toffminute") config.TurnOffMinute =  server.arg(i).toInt();
+			if (server.argName(i) == "tonhour") config.TurnOnHour = server.arg(i).toInt();
+			if (server.argName(i) == "tonminute") config.TurnOnMinute = server.arg(i).toInt();
+			if (server.argName(i) == "toffhour") config.TurnOffHour = server.arg(i).toInt();
+			if (server.argName(i) == "toffminute") config.TurnOffMinute = server.arg(i).toInt();
 			if (server.argName(i) == "tonenabled2") config.AutoTurnOn2 = true;
 			if (server.argName(i) == "toffenabled2") config.AutoTurnOff2 = true;
-			if (server.argName(i) == "tonhour2") config.TurnOnHour2 =  server.arg(i).toInt();
-			if (server.argName(i) == "tonminute2") config.TurnOnMinute2 =  server.arg(i).toInt();
-			if (server.argName(i) == "toffhour2") config.TurnOffHour2 =  server.arg(i).toInt();
-			if (server.argName(i) == "toffminute2") config.TurnOffMinute2 =  server.arg(i).toInt();
-			if (server.argName(i) == "maxboilertemperature") config.MaxTemperature =  server.arg(i).toInt();
-			if (server.argName(i) == "midboilertemperature") config.MidTemperature =  server.arg(i).toInt();
+			if (server.argName(i) == "tonhour2") config.TurnOnHour2 = server.arg(i).toInt();
+			if (server.argName(i) == "tonminute2") config.TurnOnMinute2 = server.arg(i).toInt();
+			if (server.argName(i) == "toffhour2") config.TurnOffHour2 = server.arg(i).toInt();
+			if (server.argName(i) == "toffminute2") config.TurnOffMinute2 = server.arg(i).toInt();
+			if (server.argName(i) == "maxboilertemperature") config.MaxTemperature = server.arg(i).toInt();
+			if (server.argName(i) == "midboilertemperature") config.MidTemperature = server.arg(i).toInt();
 		}
 		WriteConfig();
 		firstStart = true;
+		firstStartRefresh = true;
 	}
-	server.send ( 200, "text/html", PAGE_AdminGeneralSettings );
+	server.send (200, "text/html", PAGE_AdminGeneralSettings);
 	Serial.println(__FUNCTION__);
-
-
 }
 
 void send_general_configuration_values_html()
 {
 	String values ="";
-	values += "boilertemp|" + (String) sensors.getTempC(config.SensorID[0]) +  "|div\n";
-	values += "devicename|" +  (String)  config.DeviceName +  "|input\n";
-	values += "tonhour|" +  (String)  config.TurnOnHour +  "|input\n";
-	values += "tonminute|" +   (String) config.TurnOnMinute +  "|input\n";
-	values += "toffhour|" +  (String)  config.TurnOffHour +  "|input\n";
-	values += "toffminute|" +   (String)  config.TurnOffMinute +  "|input\n";
-	values += "toffenabled|" +  (String) (config.AutoTurnOff ? "checked" : "") + "|chk\n";
-	values += "tonenabled|" +  (String) (config.AutoTurnOn ? "checked" : "") + "|chk\n";
-	values += "tonhour2|" +  (String)  config.TurnOnHour2 +  "|input\n";
-	values += "tonminute2|" +   (String) config.TurnOnMinute2 +  "|input\n";
-	values += "toffhour2|" +  (String)  config.TurnOffHour2 +  "|input\n";
-	values += "toffminute2|" +   (String)  config.TurnOffMinute2 +  "|input\n";
-	values += "toffenabled2|" +  (String) (config.AutoTurnOff2 ? "checked" : "") + "|chk\n";
-	values += "tonenabled2|" +  (String) (config.AutoTurnOn2 ? "checked" : "") + "|chk\n";
-	values += "maxboilertemperature|" +   (String)  config.MaxTemperature +  "|input\n";
-	values += "midboilertemperature|" +   (String)  config.MidTemperature +  "|input\n";
-	server.send ( 200, "text/plain", values);
+	values += "boilertemp|" + (String) sensors.getTempC(config.SensorID[0]) + "|div\n";
+	values += "SensName0|" + (String) config.SensName0 + "|div\n";
+	values += "devicename|" + (String) config.DeviceName + "|input\n";
+	values += "tonhour|" + (String) config.TurnOnHour + "|input\n";
+	values += "tonminute|" + (String) config.TurnOnMinute + "|input\n";
+	values += "toffhour|" + (String) config.TurnOffHour + "|input\n";
+	values += "toffminute|" + (String) config.TurnOffMinute + "|input\n";
+	//values += "toffenabled|" + (String) (config.AutoTurnOff ? "checked" : "") + "|chk\n";
+	values += "tonenabled|" + (String) (config.AutoTurnOn ? "checked" : "") + "|chk\n";
+	values += "tonhour2|" + (String) config.TurnOnHour2 + "|input\n";
+	values += "tonminute2|" + (String) config.TurnOnMinute2 + "|input\n";
+	values += "toffhour2|" + (String) config.TurnOffHour2 + "|input\n";
+	values += "toffminute2|" + (String) config.TurnOffMinute2 + "|input\n";
+	//values += "toffenabled2|" + (String) (config.AutoTurnOff2 ? "checked" : "") + "|chk\n";
+	values += "tonenabled2|" + (String) (config.AutoTurnOn2 ? "checked" : "") + "|chk\n";
+	values += "maxboilertemperature|" + (String) config.MaxTemperature + "|input\n";
+	values += "midboilertemperature|" + (String) config.MidTemperature + "|input\n";
+	server.send (200, "text/plain", values);
 	Serial.println(__FUNCTION__);
 }

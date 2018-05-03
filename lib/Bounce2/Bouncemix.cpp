@@ -7,9 +7,6 @@
 #endif
 #include "Bouncemix.h"
 
-
-
-
 Bouncemix::Bouncemix()
     : previous_millis(0)
     , interval_millis(10)
@@ -25,14 +22,12 @@ Bouncemix::Bouncemix()
     , SFell(false) // falling edge indicator
     , SDouble(false) //double switch indicator
     , SLong(false) //long press indicator
+    , DOUBLECLICKTIME(40)
+    , LONGCLICKTIME(100)
 {}
 
 void Bouncemix::attach(int pin) {
     this->pin = pin;
-    //state = 0;
-    //if (digitalRead(pin)) {
-    //    state = _BV(DEBOUNCED_STATE) | _BV(UNSTABLE_STATE);
-    //}
 }
 
 void Bouncemix::attach(int pin, int mode){
@@ -100,14 +95,20 @@ bool Bouncemix::read()
     return SON;
 }
 
-bool Bouncemix::rose()
+bool Bouncemix::rise()
 {
-    return SRise;
+  boolean ret;
+  ret = SRise;
+  SRise = false;
+  return ret;
 }
 
 bool Bouncemix::fell()
 {
-    return SFell;
+  boolean ret;
+  ret = SFell;
+  SFell = false;
+  return ret;
 }
 
 bool Bouncemix::longpress()

@@ -1,0 +1,24 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+HTTPSRedirectFirstRunFlag	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^boolean HTTPSRedirectFirstRunFlag = true;$/;"	variable	line:22
+host	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^const char* host = "script.google.com";$/;"	variable	line:27
+GScriptId	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^const char *GScriptId = "AKfycbw9txFwPnjbdvm29XBvnPv97gGjfZiL4_J4HSYYGaegQiPYBcQ";$/;"	variable	line:29
+httpsPort	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^const int httpsPort = 443;$/;"	variable	line:31
+fingerprint	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^const char* fingerprint = "";$/;"	variable	line:34
+url	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^String url = String("\/macros\/s\/") + GScriptId + "\/exec?value=Hello";$/;"	variable	line:37
+url2	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^String url2 = String("\/macros\/s\/") + GScriptId + "\/exec?cal";$/;"	variable	line:39
+url3	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^String url3 = String("\/macros\/s\/") + GScriptId + "\/exec?read";$/;"	variable	line:41
+payload_base	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^String payload_base =  "{\\"command\\": \\"appendRow\\", \\$/;"	variable	line:43
+payload	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^String payload = "";$/;"	variable	line:46
+client	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^HTTPSRedirect* client = nullptr;$/;"	variable	line:48
+free_heap_before	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^unsigned int free_heap_before = 0;$/;"	variable	line:53
+free_stack_before	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^unsigned int free_stack_before = 0;$/;"	variable	line:54
+HTTPSredirectscaleMax	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^const uint8 HTTPSredirectscaleMax = 4;$/;"	variable	line:56
+HTTPSredirectscale	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^uint8 HTTPSredirectscale = 0;$/;"	variable	line:57
+HTTPSredirectsetup	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^void HTTPSredirectsetup() {$/;"	function	line:59	signature:()
+HTTPSredirectFirstRun	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^void HTTPSredirectFirstRun(){$/;"	function	line:68	signature:()
+HTTPSredirectloop	C:\Users\a\Documents\atom\ESP_WebConfig_V1.1.3\lib\HTTPSRedirect\HTTPSredirecttest.cpp	/^void HTTPSredirectloop() {$/;"	function	line:162	signature:()

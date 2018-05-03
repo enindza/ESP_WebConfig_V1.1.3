@@ -25,19 +25,27 @@
   Main code by Thomas O Fredericks (tof@t-o-f.info)
   Previous contributions by Eric Lowry, Jim Schimpf and Tom Harkaway
   * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-  #ifndef Bouncemix_h
-  #define Bouncemix_h
+
+#ifndef Bounce2_h
+#define Bounce2_h
+
+// Uncomment the following line for "LOCK-OUT" debounce method
+#define BOUNCE_LOCK_OUT
+
+// Uncomment the following line for "BOUNCE_WITH_PROMPT_DETECTION" debounce method
+//#define BOUNCE_WITH_PROMPT_DETECTION
 
 #include <inttypes.h>
-//#define DOUBLECLICKTIME 40
-//#define LONGCLICKTIME 100
 
+#ifndef _BV
+#define _BV(n) (1<<(n))
+#endif
 
-class Bouncemix
+class Bounce
 {
  public:
     // Create an instance of the bounce library
-    Bouncemix();
+    Bounce();
 
     // Attach to a pin (and also sets initial state)
     void attach(int pin);
@@ -45,11 +53,8 @@ class Bouncemix
     // Attach to a pin (and also sets initial state) and sets pin to mode (INPUT/INPUT_PULLUP/OUTPUT)
     void attach(int pin, int mode);
 
-    // Sets the debounce interval ONLY FOR REFFERENCE DELETE
+    // Sets the debounce interval
     void interval(uint16_t interval_millis);
-
-    //  reset clear indicators
-    void reset();
 
     // Updates the pin
     // Returns 1 if the state changed
@@ -63,30 +68,21 @@ class Bouncemix
     bool fell();
 
     // Returns the rising pin state
-    bool rise();
+    bool rose();
 
-    void testprint();
-
-    bool longpress();
-
-    bool doubleclick();
+    // Partial compatibility for programs written with Bounce version 1
+    bool risingEdge() { return rose(); }
+    bool fallingEdge() { return fell(); }
+    Bounce(uint8_t pin, unsigned long interval_millis ) : Bounce() {
+        attach(pin);
+        interval(interval_millis);
+    }
 
  protected:
     unsigned long previous_millis;
     uint16_t interval_millis;
     uint8_t state;
     uint8_t pin;
-    bool T0; //today
-    bool T1; // yesterday
-    bool T2; // day before yesterday
-    bool SON; //switch on
-    uint8_t TONC; //timer for switch on state
-    uint8_t TOFFC; // timer for switch off state
-    bool SRise; // rising edge indicator
-    bool SFell; // falling edge indicator
-    bool SDouble; //double switch indicator
-    bool SLong; //long press indicator
-    uint8_t DOUBLECLICKTIME;
-    uint8_t LONGCLICKTIME;
 };
+
 #endif

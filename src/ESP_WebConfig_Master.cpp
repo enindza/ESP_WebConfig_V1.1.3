@@ -37,6 +37,7 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+//#include <WiFiClientSecure.h>
 #include <ESP8266WebServer.h>
 #include <Ticker.h>
 #include <EEPROM.h>
@@ -45,17 +46,21 @@
 #include "Arduino.h"
 #include <Bouncemix.h>
 //#include "Bouncemix.cpp"
-#define BUTTON_PIN D0
-#define LED_PIN D1
-#define HEATERINDICATOR D3
-#define HEATER D1
-#define POWERINDICATOR D4
+#define BUTTON_PIN D0       //button switch
+#define LED_PIN D3          //Button led indicator
+#define HEATERINDICATOR D6  //RelayOutput
+#define BOARDINCIDATOR D4   //BUILT IN LED
+//#define HEATER D1
+//#define POWERINDICATOR D4
 #define MINIMALTEMPERATURE 22
 // Instantiate a Bounce object
 Bouncemix debouncer = Bouncemix();
 
 #include "global.h"
 #include "bouncemixtest.h"
+
+#include "lib/BlinkPattern.h"
+#include "Example/BlinkPatternTicker.h"
 
 // Instantiate a Bounce object :
 /*Bounce debouncer = Bounce();
@@ -70,7 +75,7 @@ bool button;
 Include the HTML, STYLE and Script "Pages"
 */
 # include <I2CDallas.h>
-#include "powerregulation.h"
+
 
 #include "Page_Root.h"
 #include "Page_Admin.h"
@@ -85,10 +90,13 @@ Include the HTML, STYLE and Script "Pages"
 #include "example.h"
 #include "Setup_Server.h"
 
+
+//config.Test = false;
+#include "HTTPSredirecttest.h"
 #include "powerregulation.h"
 
-#define ACCESS_POINT_NAME  "ESP"
-#define ACCESS_POINT_PASSWORD  "12345678"
+#define ACCESS_POINT_NAME "ESP"
+#define ACCESS_POINT_PASSWORD "12345678"
 #define AdminTimeOut 180  // Defines the Time in Seconds, when the Admin-Mode will be diabled
 
 void setPin(int state) {
@@ -101,6 +109,7 @@ void setup ( void ) {
 	Serial.begin(115200);
 	delay(500);
 	Serial.println("Starting ES8266");
+  config.NTPUpdateStatus = false;
 
 	// set default CONFIGURATION by changing cfg part for FRESH START
 	//EEPROM.write(0,'J');
@@ -166,7 +175,20 @@ void setup ( void ) {
   debouncer.attach(BUTTON_PIN);
   debouncer.interval(5); // interval in ms
   //Setup the LED :
-  pinMode(LED_PIN,OUTPUT);
+  //pinMode(LED_PIN,OUTPUT);
+
+  //https redirect setup
+  //HTTPSredirectsetup();
+
+  // blinkpattern setup
+
+    pattern.attach(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, 1);
+    pattern.Invert(false);
+    pattern.ValDifPrescaler(1);
+    //pattern.attach(D0,OUTPUT);
+    pattern.BlinkPatternSet(0b10000000); //01010101 10100000
+    pattern.Prescaler(8);
 
 }
 
@@ -187,21 +209,38 @@ void loop ( void ) {
 			 WiFi.mode(WIFI_STA);
 		}
 	}
+
+  //NTP update check
 	if (config.Update_Time_Via_NTP_Every  > 0 )
 	{
-		if (cNTP_Update > 5 && firstStart)
+		if (cNTP_Update > 20 && firstStart)
 		{
 			NTPRefresh();
 			cNTP_Update =0;
-			firstStart = false;
+      Serial.println("NTPRefresh");
+      // premesteno u ntprefresh petlju radi brzeg osvezavanja
+			//firstStart = false;
 		}
 		else if ( cNTP_Update > (config.Update_Time_Via_NTP_Every * 60) )
 		{
 			NTPRefresh();
 			cNTP_Update =0;
+      Serial.println("NTPRefresh");
 		}
 	}
 
+  NTPRefreshUpdate();
+
+  // update timer settings after time update
+	  if(firstStartRefreshUpdate){
+	    TimeNeverUpdated = false;
+      firstStartRefreshUpdate = false;
+	    config.TimerOn = CalculateTimerState(config.AutoTurnOn, config.AutoTurnOn2, (config.TurnOnHour << 8) + config.TurnOnMinute, (config.TurnOnHour2 << 8) + config.TurnOnMinute2, (config.TurnOffHour << 8) + config.TurnOffMinute, (config.TurnOffHour2 << 8) + config.TurnOffMinute2, (DateTime.hour << 8) + DateTime.minute);
+	    Serial.print ("******* TimerUpdate: "); //Serial.println(config.TimerOn, DEC);
+      //Serial.print("******** TIME "); Serial.print(DateTime.hour, DEC); Serial.print (":");
+	  }
+
+// Switch timer
 	if(DateTime.minute != Minute_Old)
 	{
 		 Minute_Old = DateTime.minute;
@@ -210,6 +249,7 @@ void loop ( void ) {
 			 if (DateTime.hour == config.TurnOnHour && DateTime.minute == config.TurnOnMinute)
 			 {
 				  Serial.println("SwitchON");
+          config.TimerOn = TRUE;
 			 }
 		 }
 		 Minute_Old = DateTime.minute;
@@ -218,23 +258,26 @@ void loop ( void ) {
 			 if (DateTime.hour == config.TurnOnHour2 && DateTime.minute == config.TurnOnMinute2)
 			 {
 				  Serial.println("SwitchON2");
+          config.TimerOn = TRUE;
 			 }
 		 }
 
 		 Minute_Old = DateTime.minute;
-		 if (config.AutoTurnOff)
+		 if (config.AutoTurnOn)  //config.AutoTurnOff
 		 {
 			 if (DateTime.hour == config.TurnOffHour && DateTime.minute == config.TurnOffMinute)
 			 {
 				  Serial.println("SwitchOff");
+          config.TimerOn = FALSE;
 			 }
 		 }
 		 Minute_Old = DateTime.minute;
-		 if (config.AutoTurnOff2)
+		 if (config.AutoTurnOn2) //config.AutoTurnOff2
 		 {
 			 if (DateTime.hour == config.TurnOffHour2 && DateTime.minute == config.TurnOffMinute2)
 			 {
 					Serial.println("SwitchOff2");
+          config.TimerOn = FALSE;
 			 }
 		 }
 	}
@@ -247,6 +290,7 @@ void loop ( void ) {
 	*
 	*/
 	I2CDallasLoop();
+  //CalculateTimerState(config.AutoTurnOn, config.AutoTurnOn2, config.TurnOnHour, config.TurnOnHour2, config.TurnOffHour, config.TurnOffHour2, );
   PowerControl();
 	/*
 	*    Your Code end here

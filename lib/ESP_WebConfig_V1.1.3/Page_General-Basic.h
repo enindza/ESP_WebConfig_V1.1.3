@@ -144,8 +144,6 @@ void send_general_html()
 	}
 	server.send ( 200, "text/html", PAGE_AdminGeneralSettings );
 	Serial.println(__FUNCTION__);
-
-
 }
 
 void send_general_configuration_values_html()
