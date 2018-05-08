@@ -45,7 +45,7 @@ tool-esptool @ 1.413.0 has been successfully installed!
 Updating tool-espotapy                   @ 1.1.0          [Up-to-date]
 Updating toolchain-xtensa                @ 1.40802.0      [Up-to-date]
 Uninstalling framework-arduinoespressif8266 @ 1.20400.2:        [OK]
-PackageManager: Installing framework-arduinoespressif8266 @ ~1.20401.1
+PackageManager: Installing framework-arduinoespressif8266
 Downloading...
 Unpacking...
 framework-arduinoespressif8266 @ 1.20401.2 has been successfully installed!
