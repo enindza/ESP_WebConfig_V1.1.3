@@ -198,6 +198,8 @@ void setup ( void ) {
 
     //ifttt initialize
     IFTTTinit();
+    //trigger ifttt  Boiler power up 0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+    IFTTTset(0);
 
 }
 
@@ -302,14 +304,15 @@ void loop ( void ) {
   //CalculateTimerState(config.AutoTurnOn, config.AutoTurnOn2, config.TurnOnHour, config.TurnOnHour2, config.TurnOffHour, config.TurnOffHour2, );
   PowerControl();
 
-  //IFTTTUpdate();
+
 	/*
 	*    Your Code end here
 	*
 	*
 	*/
 
-  //if ((millis() - HTTPSreadylasttime ) > 10000){HTTPSready = true;} //
+  if ((millis() - HTTPSreadylasttime ) > 3000){HTTPSready = true;} //
+  IFTTTUpdate();
 
 	if (Refresh)
 	{

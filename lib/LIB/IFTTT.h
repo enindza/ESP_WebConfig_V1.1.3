@@ -1,4 +1,4 @@
-#define IFTTTRETRY 3 //Single IFTTT message will be retried IFTTTRETRY times
+#define IFTTTRETRY 2 //Single IFTTT message will be retried IFTTTRETRY times
 #define IFTTTCode0 "Bojler power up"  //After power up of reset
 #define IFTTTCode1 "Bojler set temperature reached"
 #define IFTTTCode2 "Sensor error"
@@ -25,17 +25,7 @@ void IFTTTinit(){
   IFTTTconfig.Success = 0;
 }
 
-// Set IFTTT message with code for sending
-// new message will rewrite old one, check this for next application
-// call from the main code
-void IFTTTset(uint8_t Code){
 
-  IFTTTconfig.Code = Code;
-  IFTTTconfig.RetryCounter = 0;
-  IFTTTconfig.RetryDelayExpire = millis(); //Sent first retry as soon as possible
-  IFTTTconfig.Success = 0;
-  Serial.printf("*-* IFTTTset Code:"); Serial.println(IFTTTconfig.Code, DEC);
-}
 
 boolean IFTTTSend(String eventName, String value1 = "", String value2 = "", String value3= ""){
   //if (IFTTTfail < IFTTTRetryMax)
@@ -63,30 +53,48 @@ boolean IFTTTSend(String eventName, String value1 = "", String value2 = "", Stri
   return result;
 }
 
+// Set IFTTT message with code for sending
+// new message will rewrite old one, check this for next application
+// call from the main code
+void IFTTTset(uint8_t Code){
+
+  IFTTTconfig.Code = Code;
+  IFTTTconfig.RetryCounter = 0;
+  IFTTTconfig.RetryDelayExpire = millis(); //Sent first retry as soon as possible
+  IFTTTconfig.Success = 0;
+  Serial.printf("*-* IFTTTset Code:"); Serial.println(IFTTTconfig.Code, DEC);
+  //IFTTTSend(EVENT_NAME, String(config.Temperatura[0], DEC), "edge");
+}
+
 //update IFTTT status, and execute code if unnecessary
 //should be positioned in main loop, and checked as often as possible
 void IFTTTUpdate(){
   boolean  result;
   //String tekst = "";
   //tekst = " " + config.Temperatura[0] + " ";
-  if ((HTTPSready) and (WiFi.status() == WL_CONNECTED)){
-    Serial.printf("*-* IFTTT switch Code"); Serial.println(IFTTTconfig.Code, DEC);
+  if ((HTTPSready) and (WiFi.status() == WL_CONNECTED) and (IFTTTconfig.RetryCounter < IFTTTRETRY)){
+    HTTPSready = false; //disable ifttt and other https requests
+    HTTPSreadylasttime = millis();
+    Serial.printf("*-* IFTTT UPDATE with Code"); Serial.println(IFTTTconfig.Code, DEC);
     switch (IFTTTconfig.Code) {
-      case 0: //Boiler power up
-        Serial.println("*-* IFTTT enter Case 0");
-        result = IFTTTSend(EVENT_NAME, String(config.Temperatura[0], DEC), "0"); // statements
-        IFTTTconfig.RetryCounter++;
+      case 0: //Boiler power up 0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+        //Serial.println("*-* IFTTT enter Case 0");
+        result = IFTTTSend(EVENT_NAME_REBOOT, String(config.Temperatura[0], DEC), String(config.Mode), String(IFTTTconfig.RetryCounter, DEC)); // statements
         break;
-      case 1: //Temperature reached
-        // statements
+      case 1: //Temperature reached 0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+        result = IFTTTSend(EVENT_NAME, String(config.Temperatura[0], DEC), String(config.Mode), String(IFTTTconfig.RetryCounter, DEC)); // statements
         break;
-      case 2: //Error
-        // statements
+      case 2: //Sensor Error  0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+        result = IFTTTSend(EVENT_NAME_ERROR, IFTTTCode2, "-*-", String(IFTTTconfig.RetryCounter, DEC)); // statements
         break;
+      case 3: //Hardware error  0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+          result = IFTTTSend(EVENT_NAME_ERROR, String(config.Temperatura[0], DEC), "0", String(IFTTTconfig.RetryCounter, DEC)); // statements
+          break;
       default:
-        // statements
+        //
         break;
     }
+    IFTTTconfig.RetryCounter++;
     if (result){IFTTTconfig.Success++;}
   }
 }

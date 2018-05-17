@@ -83,6 +83,8 @@ void PowerControl(){
           // single heat limit reached
           config.Mode = 0;
           config.PowerOutput = FALSE;
+          //trigger ifttt  Boiler power up 0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
+          IFTTTset(1);
         } else {config.PowerOutput = TRUE;}
       }
     }

@@ -329,6 +329,7 @@ unsigned int HTTPSRedirect::getResponseStatus(void){
   do{
     line = readStringUntil('\n');
   }while(millis() - t < timeout_ms and line.length() == 0);
+  //if (millis() - t < timeout_ms){Serial.println("-*-*-* DO loop exit");}
   //Serial.println("-*-*-* DO loop exit");
 
   pos = line.indexOf("HTTP/1.1 ");
