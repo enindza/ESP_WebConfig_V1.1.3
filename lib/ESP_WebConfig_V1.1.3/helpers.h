@@ -16,7 +16,6 @@ struct  strDateTime
 	byte month;
 	byte day;
 	byte wday;
-
 } ;
 
 
@@ -50,12 +49,11 @@ boolean checkRange(String Value)
 	 }
 }
 
-
 void WriteStringToEEPROM(int beginaddress, String string)
 {
 	char  charBuf[string.length()+1];
 	string.toCharArray(charBuf, string.length()+1);
-	for (int t=  0; t<sizeof(charBuf);t++)
+	for (unsigned int t=  0; t<sizeof(charBuf);t++)
 	{
 			EEPROM.write(beginaddress + t,charBuf[t]);
 	}

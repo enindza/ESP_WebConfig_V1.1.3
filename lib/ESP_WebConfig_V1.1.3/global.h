@@ -5,6 +5,9 @@
 
 ESP8266WebServer server(80);									// The Webserver
 boolean firstStart = true;										// On firststart = true, NTP will try to get a valid time
+boolean firstStartRefresh = false;					//  New time is calculated time is collected
+boolean firstStartRefreshUpdate = false;		//  new time is processed
+boolean TimeNeverUpdated = true;						//Time never updated
 int AdminTimeOutCounter = 0;									// Counter for Disabling the AdminMode
 strDateTime DateTime;											// Global DateTime structure, will be refreshed every Second
 WiFiUDP UDPNTPClient;											// NTP Client
@@ -12,65 +15,25 @@ unsigned long UnixTimestamp = 0;								// GLOBALTIME  ( Will be set by NTP)
 boolean Refresh = false; // For Main Loop, to refresh things like GPIO / WS2812
 int cNTP_Update = 0;											// Counter for Updating the time via NTP
 Ticker tkSecond;												// Second - Timer for Updating Datetime Structure
-//Ticker Half_Second_Tick;
+Ticker tkHalfSecond;
+Ticker tkDebounce;
+uint8_t Tickercounter;
 boolean AdminEnabled = true;		// Enable Admin Mode for a given Time
 byte Minute_Old = 100;				// Helpvariable for checking, when a new Minute comes up (for Auto Turn On / Off)
 byte TickCounter = 0;	// TICKER counter
 #define TICKCOUNTERMAX 50 // for 20 ms ticker gives 1 sec period
 #define TICKPOWERCOUNTER 15 // 7 ~ 50/8 for 20ms tick
 long lastPowerRequest; //refresh for powerregulation
-
-struct strConfig {
-	String ssid;
-	String password;
-	byte  IP[4];
-	byte  Netmask[4];
-	byte  Gateway[4];
-	boolean dhcp;
-	String ntpServerName;
-	long Update_Time_Via_NTP_Every;
-	long timezone;
-	boolean daylight;
-	String DeviceName;
-	boolean AutoTurnOff;
-	boolean AutoTurnOn;
-	byte TurnOffHour;
-	byte TurnOffMinute;
-	byte TurnOnHour;
-	byte TurnOnMinute;
-	boolean AutoTurnOff2;
-	boolean AutoTurnOn2;
-	byte TurnOffHour2;
-	byte TurnOffMinute2;
-	byte TurnOnHour2;
-	byte TurnOnMinute2;
-	byte LED_R;
-	byte LED_G;
-	byte LED_B;
-	long temp1;
-	long temp2;
-	long temp3;
-	long temp4;
-	long temp5;
-	/*byte  SensorID1[8];
-	byte  SensorID2[8];
-	byte  SensorID3[8];
-	byte  SensorID4[8];
-	byte  SensorID5[8];*/
-	long	SensorTemperature[5];
-	byte	SensorID[5][8];
-	long	temperatura[5];
-	String SensName0;
-	String SensName1;
-	String SensName2;
-	String SensName3;
-	String SensName4;
-	byte LinkID[5];
-	//	Boiler termperature
-	long MaxTemperature;
-	long MidTemperature;
-	//long HoldMidTemperature; //minutes to hold mid temperature
-}   config;
+long lastNTPRequest;
+boolean WaitingForNTPResponse;
+#include "Config.h"
+long HTTPSreadylasttime; //set the time when ESP will be ready for next
+boolean HTTPSready = true;
+// IFTTT
+//#define IFTTTRetryMax 3
+//#define IFTTTRetryDelay 60 //number of seconds before Retrying
+//uint8_t IFTTTRetryCount 0;
+//long IFTTTRetryDelaySet 0;
 
 
 /*
@@ -87,8 +50,6 @@ void ConfigureWifi()
 		WiFi.config(IPAddress(config.IP[0],config.IP[1],config.IP[2],config.IP[3] ),  IPAddress(config.Gateway[0],config.Gateway[1],config.Gateway[2],config.Gateway[3] ) , IPAddress(config.Netmask[0],config.Netmask[1],config.Netmask[2],config.Netmask[3] ));
 	}
 }
-
-
 
 void WriteConfig()
 {
@@ -260,61 +221,80 @@ boolean ReadConfig()
 
 const int NTP_PACKET_SIZE = 48;
 byte packetBuffer[ NTP_PACKET_SIZE];
+
 void NTPRefresh()
 {
 	if (WiFi.status() == WL_CONNECTED)
 	{
-		IPAddress timeServerIP;
-		WiFi.hostByName(config.ntpServerName.c_str(), timeServerIP);
-		//sendNTPpacket(timeServerIP); // send an NTP packet to a time server
+		if (!WaitingForNTPResponse){
+			IPAddress timeServerIP;
+			WiFi.hostByName(config.ntpServerName.c_str(), timeServerIP);
+			//sendNTPpacket(timeServerIP); // send an NTP packet to a time server
 
-		Serial.println("sending NTP packet...");
-		memset(packetBuffer, 0, NTP_PACKET_SIZE);
-		packetBuffer[0] = 0b11100011;   // LI, Version, Mode
-		packetBuffer[1] = 0;     // Stratum, or type of clock
-		packetBuffer[2] = 6;     // Polling Interval
-		packetBuffer[3] = 0xEC;  // Peer Clock Precision
-		packetBuffer[12]  = 49;
-		packetBuffer[13]  = 0x4E;
-		packetBuffer[14]  = 49;
-		packetBuffer[15]  = 52;
-		UDPNTPClient.beginPacket(timeServerIP, 123);
-		UDPNTPClient.write(packetBuffer, NTP_PACKET_SIZE);
-		UDPNTPClient.endPacket();
-
-
-		delay(1000);
-
-		int cb = UDPNTPClient.parsePacket();
-		if (!cb) {
-			Serial.println("NTP no packet yet");
-		}
-		else
-		{
-			Serial.print("NTP packet received, length=");
-			Serial.println(cb);
-			UDPNTPClient.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
-			unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
-			unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
-			unsigned long secsSince1900 = highWord << 16 | lowWord;
-			const unsigned long seventyYears = 2208988800UL;
-			unsigned long epoch = secsSince1900 - seventyYears;
-			UnixTimestamp = epoch;
+			Serial.println("sending NTP packet...");
+			memset(packetBuffer, 0, NTP_PACKET_SIZE);
+			packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+			packetBuffer[1] = 0;     // Stratum, or type of clock
+			packetBuffer[2] = 6;     // Polling Interval
+			packetBuffer[3] = 0xEC;  // Peer Clock Precision
+			packetBuffer[12]  = 49;
+			packetBuffer[13]  = 0x4E;
+			packetBuffer[14]  = 49;
+			packetBuffer[15]  = 52;
+			UDPNTPClient.beginPacket(timeServerIP, 123);
+			UDPNTPClient.write(packetBuffer, NTP_PACKET_SIZE);
+			UDPNTPClient.endPacket();
+			WaitingForNTPResponse = true;
+			lastNTPRequest = millis();
 		}
 	}
 }
 
+void NTPRefreshUpdate(){
+	if ((WiFi.status() == WL_CONNECTED) and WaitingForNTPResponse){
+		if (millis() - lastNTPRequest >= 1000){
+			//delay(1000);
+			//lastNTPRequest = millis();
+			WaitingForNTPResponse = false;
+			int cb = UDPNTPClient.parsePacket();
+			if (!cb) {
+				Serial.println("NTP no packet yet");
+			}
+			else
+			{
+				Serial.print("NTP packet received, length=");
+				Serial.println(cb);
+
+				config.NTPUpdateStatus = true;
+
+				UDPNTPClient.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
+				unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
+				unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
+				unsigned long secsSince1900 = highWord << 16 | lowWord;
+				const unsigned long seventyYears = 2208988800UL;
+				unsigned long epoch = secsSince1900 - seventyYears;
+				UnixTimestamp = epoch;
+				firstStart = false;
+				firstStartRefresh = true;
+
+			}
+		}
+	}
+}
+
+
 void Second_Tick()
 {
+	//Serial.printf("Second tick enter******");
 	strDateTime tempDateTime;
 	AdminTimeOutCounter++;
 	cNTP_Update++;
 	UnixTimestamp++;
-	ConvertUnixTimeStamp(UnixTimestamp +  (config.timezone *  360) , &tempDateTime);
+	ConvertUnixTimeStamp(UnixTimestamp +  (config.timezone * 360) , &tempDateTime);
 	if (config.daylight) // Sommerzeit beachten
 		if (summertime(tempDateTime.year,tempDateTime.month,tempDateTime.day,tempDateTime.hour,0))
 		{
-			ConvertUnixTimeStamp(UnixTimestamp +  (config.timezone *  360) + 3600, &DateTime);
+			ConvertUnixTimeStamp(UnixTimestamp +  (config.timezone * 360) + 3600, &DateTime);
 		}
 		else
 		{
@@ -325,34 +305,8 @@ void Second_Tick()
 			DateTime = tempDateTime;
 	}
 	Refresh = true;
-
+	if (firstStartRefresh){firstStartRefreshUpdate = true; firstStartRefresh = false;}
+	//firstStart = false;
 }
-
-void Half_Second_Tick()
-{
-	int state = digitalRead(HEATERINDICATOR);  // get the current state of GPIO1 pin
-	digitalWrite(HEATERINDICATOR, !state);
-
-}
-
-void Debounce_Tick()
-{
-	debouncer.update();
-	// Get the updated value :
-  bool value = debouncer.read();
-  //serial.print("vrednost debouncer.read je:");
-  //serial.println(value);
-  // Turn on or off the LED as determined by the state :
-  if (value == true){
-    digitalWrite(LED_PIN, 1 );
-  }
-  else{
-    digitalWrite(LED_PIN, 0 );
-  }
-
-
-}
-
-
 
 #endif
