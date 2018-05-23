@@ -88,7 +88,7 @@ void IFTTTUpdate(){
         result = IFTTTSend(EVENT_NAME_ERROR, IFTTTCode2, "-*-", String(IFTTTconfig.RetryCounter, DEC)); // statements
         break;
       case 3: //Hardware error  0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
-          result = IFTTTSend(EVENT_NAME_ERROR, String(config.Temperatura[0], DEC), "0", String(IFTTTconfig.RetryCounter, DEC)); // statements
+          result = IFTTTSend(EVENT_NAME_ERROR, String(config.Temperatura[0], DEC), "Hardware error", String(IFTTTconfig.RetryCounter, DEC)); // statements
           break;
       default:
         //

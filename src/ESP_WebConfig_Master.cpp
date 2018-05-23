@@ -58,6 +58,18 @@
 // Instantiate a Bounce object
 Bouncemix debouncer = Bouncemix();
 
+// CONNECTIONS:
+// DS3231 SDA --> SDA
+// DS3231 SCL --> SCL
+// DS3231 VCC --> 3.3v or 5v
+// DS3231 GND --> GND
+/* for normal hardware wire use below */
+#include <Wire.h> // must be included here so that Arduino library object file references work
+#include <RtcDS3231.h>
+RtcDS3231<TwoWire> Rtc(Wire);
+#include "DS3231use.h"
+/* for normal hardware wire use above */
+
 #include "global.h"
 #include <IFTTTwebhooks.h>
 #include "IFTTT.h"
@@ -98,6 +110,8 @@ Include the HTML, STYLE and Script "Pages"
 //config.Test = false;
 #include "HTTPSredirecttest.h"
 #include "powerregulation.h"
+
+
 
 #define ACCESS_POINT_NAME "ESP"
 #define ACCESS_POINT_PASSWORD "12345678"
@@ -200,6 +214,17 @@ void setup ( void ) {
     IFTTTinit();
     //trigger ifttt  Boiler power up 0- reboot, 1 - temperature reached, 2 Sensor Error, 3 Hardware error
     IFTTTset(0);
+
+    // ds3231 RTC setup
+    //ScanI2C(); TEST Scan all
+    if (ScanDS3231()) {Serial.println("DS3231 attached!");
+      RTCSetup();
+    }
+    else {
+      IFTTTset(3);
+      Serial.println("WARNING DS3231 is not present!");
+    }
+
 
 }
 

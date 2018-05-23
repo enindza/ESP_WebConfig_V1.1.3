@@ -1,6 +1,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
-
+//#include "DS3231use.h"
+//#include <RtcDS3231.h>
 
 
 ESP8266WebServer server(80);									// The Webserver
@@ -277,6 +278,7 @@ void NTPRefreshUpdate(){
 				firstStart = false;
 				firstStartRefresh = true;
 
+				DS3231update(epoch);
 			}
 		}
 	}
