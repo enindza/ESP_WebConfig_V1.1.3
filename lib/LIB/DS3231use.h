@@ -102,3 +102,7 @@ void DS3231update(long epoch){
   Serial.print("DS3231 updated time is:");
   printDateTime(now);
 }
+
+void DS3231readtime(){
+  RtcDateTime now = Rtc.GetDateTime(); 
+}
